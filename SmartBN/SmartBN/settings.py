@@ -25,7 +25,7 @@ SECRET_KEY = '!9i_@@i3&$h21vtv_&sxk(#ocre1_!k0-rl!&+q&m8z5jx1k($'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'giao_vien'
+    'giao_vien',
+    'hieu_pho'
 ]
 
 MIDDLEWARE = [
@@ -55,8 +56,9 @@ ROOT_URLCONF = 'SmartBN.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR + '/templates',
+        ],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -77,7 +79,7 @@ WSGI_APPLICATION = 'SmartBN.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'smart_bn',
+        'NAME': 'smart_bn_test',
         'USER': 'client',
         'PASSWORD': '123',
         'HOST': '127.0.0.1'
@@ -122,3 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = os.path.join(BASE_DIR, "static"),
+
+AUTH_USER_MODEL = 'giao_vien.GiaoVien'

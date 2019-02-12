@@ -1,0 +1,30 @@
+[
+  {
+    "model": "giao_vien.Truong",
+    "fields": {
+      "ten": "THPT Ngô Sĩ Liên"
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Toán",
+      "khoi": 10
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Vật Lý",
+      "khoi": 10
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Hóa học",
+      "khoi": 10
+    }
+  }
+
+]
