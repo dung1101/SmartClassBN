@@ -11,7 +11,7 @@ def user_login(request):
     user = request.user
     if user.is_authenticated:
         if user.hieu_pho:
-            return render(request, 'hieu_pho/base.html')
+            return render(request, 'hieu_pho/profile.html')
         return render(request, 'giao_vien/base.html')
     else:
         if request.method == "POST":
