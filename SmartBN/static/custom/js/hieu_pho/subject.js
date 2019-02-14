@@ -8,26 +8,15 @@ $(document).ready(function(){
                 return JSON.stringify(result);
             },
         },
+        columnDefs: [
+            { width: "40%", targets: 0 },
+            { width: "35%", targets: 1 },
+            { width: "25%", targets: 2 },
+        ],
         order: [[ 0, 'asc' ], [ 1, 'asc' ]],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         displayLength: 50,
     });
-
-
-//    $("#list_mon").on('click', '.btn-danger', function(){
-//        var id = $(this).attr('id').split('_')[1];
-//        var token = $("input[name=csrfmiddlewaretoken]").val();
-//        if (confirm('Bạn có chắc ?')){
-//            $.ajax({
-//                type:'POST',
-//                url:location.href,
-//                data: {'delete':id, 'csrfmiddlewaretoken':token},
-//                success: function(){
-//                    table_mon.ajax.reload(null,false);
-//                }
-//           });
-//        }
-//    });
 
     // show
     $("#new_mon").on('show.bs.modal', function(event){
@@ -42,16 +31,17 @@ $(document).ready(function(){
             var khoi = $("#khoi_"+id).text();
             $("#new_mon input[name=khoi]").val(khoi);
             $('#new_mon_title').html("Chỉnh sửa môn")
-            $("#create_new_mon").html("Chỉnh sửa");
+            $("#create_new_mon").html("Lưu chỉnh sửa");
         }else{
             $("#new_mon input[name=id]").val(0);
             $("#new_mon input[name=ten]").val("");
-            $("#new_mon input[name=khoi]").val(1);
+            $("#new_mon input[name=khoi]").val("");
             $('#new_mon_titlee').html("Tạo mới lớp")
             $("#create_new_mon").html("Tạo mới");
         }
     });
 
+    // Tạo mới + sửa
     $('#create_new_mon').click( function(){
         var ten = $("#new_mon input[name=ten]").val();
         var khoi = $("#new_mon input[name=khoi]").val();
@@ -112,17 +102,49 @@ $(document).ready(function(){
         });
     });
 
-    // Chỉnh sửa
-//    $("#list_mon").on('click', '.edit', function(){
-//        var id = $(this).data("id");
-//        $("#new_mon").modal("show");
-//        var ten = $("#ten_"+id).text();
-//        $("#new_mon input[name=ten]").val(ten);
-//        var khoi = $("#khoi_"+id).text();
-//        $("#new_mon input[name=khoi]").val(khoi);
-//        $('#new_mon_title').html("Chỉnh sửa môn")
-//        $("#create_new_mon").html("Chỉnh sửa");
-//    });
+    // Xóa
+    $("#list_mon").on('click', '.del', function(){
+        var id = $(this).data("id");
+        Swal.fire({
+          title: 'Cảnh báo',
+          text: " Bạn chắc chắn muốn xóa ?",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Đúng',
+          cancelButtonText: 'Sai'
+        }).then((result) => {
+          if (result.value) {
+            var posting = $.post(location.href, {
+                csrfmiddlewaretoken :$("input[name=csrfmiddlewaretoken]").val(),
+                id_xoa: id
+            });
+            posting.done(function(data){
+                var result = JSON.parse(JSON.stringify(data));
+                if(result.status == 'False'){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Lỗi',
+                        text: result.messages,
+                    });
+                }
+                else{
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Thành công',
+                        text: result.messages,
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then((result) => {
+                        table_mon.ajax.reload(null,false);
+                        $("#new_mon").modal("hide");
+                    });
+                };
+            });
+          }
+        })
+    });
 
 
 });

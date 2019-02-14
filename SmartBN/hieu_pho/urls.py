@@ -10,7 +10,12 @@ urlpatterns = [
         path('_list', views.subject_list, name='subject_list'),
         path('_detail_<int:id>', views.subject_detail, name='subject_detail'),
     ])),
-    path('teacher', views.teacher, name='teacher'),
+
+    path('teacher', include([
+        path('', views.teacher, name='teacher'),
+        path('_list', views.teacher_list, name='teacher_list'),
+    ])),
+
     path('question', views.question, name='question'),
     path('exam', views.exam, name='exam'),
     path('profile', views.profile, name='profile'),

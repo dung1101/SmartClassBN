@@ -9,24 +9,27 @@ $(document).ready(function(){
     });
 
     $("#save_profile").click(function(){
-        var ho = $("input[name='ho']").val();
-        var ten_dem = $("input[name='ten_dem']").val();
-        var ten = $("input[name='ten']").val();
+        var ho_ten = $("input[name='ho_ten']").val();
         var pass = $("input[name='password']").val();
+        var gioi_tinh;
+        $(".gioi_tinh").each(function(){
+            if(this.checked){
+                gioi_tinh = this.name;
+            }
+        })
 
-        if( pass == "" || ho == "" || ten == "" ){
+        if( pass == "" || ho_ten == ""){
             Swal.fire({
                 type: 'error',
                 title: 'Lỗi',
-                text: 'Họ, tên và mật khẩu không được để trống',
+                text: 'Họ tên và mật khẩu không được để trống',
             });
             return false;
         }
 
         var posting = $.post(window.location.href, {
-            ho: ho,
-            ten_dem: ten_dem,
-            ten: ten,
+            ho_ten: ho_ten,
+            gioi_tinh: gioi_tinh,
             password: pass,
             csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
         });

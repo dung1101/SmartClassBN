@@ -14,6 +14,11 @@ class Mon(models.Model):
     khoi = models.IntegerField()
     chu_de = models.ManyToManyField(ChuDe, related_name='mon_chu_de', db_table='chu_de_mon')
 
+    @property
+    def ten_dai(self):
+        """ Tên đầy đủ"""
+        return "{mon.ten} - {mon.khoi}".format(mon=self)
+
     class Meta:
         db_table = 'mon'
 
@@ -34,12 +39,10 @@ class Truong(models.Model):
 
 
 class GiaoVienManager(BaseUserManager):
-    def create(self, username, password, ten, ho, truong, gioi_tinh, ten_dem='', hieu_pho=False):
+    def create(self, username, password, ho_ten, truong, gioi_tinh, hieu_pho=False):
         giao_vien = self.model(
             username=username,
-            ten=ten,
-            ho=ho,
-            ten_dem=ten_dem,
+            ho_ten=ho_ten,
             hieu_pho=hieu_pho,
             truong=truong,
             gioi_tinh=gioi_tinh,
@@ -51,9 +54,7 @@ class GiaoVienManager(BaseUserManager):
 
 class GiaoVien(AbstractBaseUser):
     username = models.CharField(max_length=20, unique=True)
-    ten = models.CharField(max_length=20)
-    ho = models.CharField(max_length=20)
-    ten_dem = models.CharField(max_length=20, blank=True)
+    ho_ten = models.CharField(max_length=100)
     hieu_pho = models.BooleanField(default=False)
     truong = models.ForeignKey(Truong, on_delete=models.CASCADE, related_name='giao_vien_truong')
     mon = models.ManyToManyField(Mon, related_name='giao_vien_mon', db_table="giao_vien_mon")
@@ -64,13 +65,6 @@ class GiaoVien(AbstractBaseUser):
 
     objects = GiaoVienManager()
     USERNAME_FIELD = 'username'
-
-    @property
-    def ho_ten(self):
-        """ Họ tên giáo viên """
-        if self.ten_dem == '':
-            return "%s %s" % (self.ho, self.ten)
-        return "%s %s %s" % (self.ho, self.ten_dem, self.ten)
 
     class Meta:
         db_table = 'giao_vien'
@@ -98,24 +92,24 @@ class CauHoi(models.Model):
     CKI = "CKI"
     GKII = "GKII"
     CKII = "CKII"
-    LUA_CHON_KY_HOC = ((GKI, "giữa kỳ I"), (CKI, "cuối kỳ I"), (GKII, "giữa kỳ II"), (CKII, "cuối kỳ II"))
+    LUA_CHON_KY_HOC = ((GKI, "Giữa kỳ I"), (CKI, "Cuối kỳ I"), (GKII, "Giữa kỳ II"), (CKII, "Cuối kỳ II"))
     ky_hoc = models.CharField(max_length=4, choices=LUA_CHON_KY_HOC)
     TN = "TN"
     DT = "DT"
     TL = "TL"
-    LUA_CHON_DANG = ((TN, "trắc nhiệm"), (DT, "điền từ"), (TL, "tự luận"))
+    LUA_CHON_DANG = ((TN, "Trắc nhiệm"), (DT, "Điền từ"), (TL, "Tự luận"))
     dang = models.CharField(max_length=2, choices=LUA_CHON_DANG)
     TEXT = "txt"
     IMAGE = "img"
     AUDIO = "au"
     VIDEO = "vi"
-    LUA_CHON_THE_LOAI = ((TEXT, "văn bản"), (IMAGE, "hình ảnh"), (AUDIO, "âm thanh"), (VIDEO, "phim"))
+    LUA_CHON_THE_LOAI = ((TEXT, "Văn bản"), (IMAGE, "Hình ảnh"), (AUDIO, "Âm thanh"), (VIDEO, "Phim"))
     the_loai = models.CharField(max_length=3, choices=LUA_CHON_THE_LOAI)
     dinh_kem = models.FileField(blank=True, upload_to='uploads/')
     DE = 'D'
     TRUNG_BINH = 'TB'
     KHO = 'K'
-    LUA_CHON_DO_KHO = ((DE, "dễ"), (TRUNG_BINH, "trung bình"), (KHO, "khó"))
+    LUA_CHON_DO_KHO = ((DE, "Dễ"), (TRUNG_BINH, "Trung bình"), (KHO, "Khó"))
     do_kho = models.CharField(max_length=2, choices=LUA_CHON_DO_KHO)
 
     class Meta:
