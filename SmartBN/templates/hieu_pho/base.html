@@ -63,11 +63,9 @@
                     <a href="{% url 'hieu_pho:teacher' %}">
                       <i class="fa fa-users"></i> Quản lý giáo viên </a>
                   </li>
-                  <li><a><i class="fa fa-question-circle-o"></i> Quản lý câu hỏi <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="{% url 'hieu_pho:question' %}">Tạo câu hỏi</a></li>
-                      <li><a href="form_advanced.html">Câu hỏi đã tạo</a></li>
-                    </ul>
+                  <li>
+                    <a href="{% url 'hieu_pho:question_list' %}">
+                      <i class="fa fa-question-circle-o"></i> Quản lý câu hỏi </a>
                   </li>
                   <li><a><i class="fa fa-table"></i> Quản lý đề <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">

@@ -79,38 +79,39 @@ class GiaoVien(AbstractBaseUser):
 
 
 class CauHoi(models.Model):
-    mon = models.ForeignKey(Mon, on_delete=models.CASCADE, related_name='cau_hoi_mon')
+    mon = models.ForeignKey(Mon, on_delete=models.CASCADE, related_name='cau_hoi_mon', related_query_name='cau_hoi_mon')
     chu_de = models.ForeignKey(ChuDe, on_delete=models.CASCADE, related_name='cau_hoi_chu_de')
     giao_vien_tao = models.ForeignKey(GiaoVien, on_delete=models.CASCADE, related_name='cau_hoi_giao_vien')
     thoi_gian_tao = models.DateTimeField(auto_now_add=True)
     noi_dung = models.TextField()
     diem = models.IntegerField(null=True)
     co_cau_hoi_nho = models.BooleanField(default=False)
+    la_cau_hoi_nho = models.BooleanField(default=False)
     cau_hoi_nho = models.ManyToManyField("self", related_name='cau_hoi_nho', db_table='cau_hoi_da')
     dap_an = models.ManyToManyField("DapAn", related_name='cau_hoi_dap_an', db_table="dap_an_cau_hoi")
-    GKI = "GKI"
-    CKI = "CKI"
-    GKII = "GKII"
-    CKII = "CKII"
+    GKI = "Giữa kỳ I"
+    CKI = "Cuối kỳ I"
+    GKII = "Giữa kỳ II"
+    CKII = "Cuối kỳ II"
     LUA_CHON_KY_HOC = ((GKI, "Giữa kỳ I"), (CKI, "Cuối kỳ I"), (GKII, "Giữa kỳ II"), (CKII, "Cuối kỳ II"))
-    ky_hoc = models.CharField(max_length=4, choices=LUA_CHON_KY_HOC)
-    TN = "TN"
-    DT = "DT"
-    TL = "TL"
+    ky_hoc = models.CharField(max_length=20, choices=LUA_CHON_KY_HOC)
+    TN = "Trắc nhiệm"
+    DT = "Điền từ"
+    TL = "Tự luận"
     LUA_CHON_DANG = ((TN, "Trắc nhiệm"), (DT, "Điền từ"), (TL, "Tự luận"))
-    dang = models.CharField(max_length=2, choices=LUA_CHON_DANG)
-    TEXT = "txt"
-    IMAGE = "img"
-    AUDIO = "au"
-    VIDEO = "vi"
+    dang = models.CharField(max_length=20, choices=LUA_CHON_DANG)
+    TEXT = "Văn bản"
+    IMAGE = "Hình ảnh"
+    AUDIO = "Âm thanh"
+    VIDEO = "Phim"
     LUA_CHON_THE_LOAI = ((TEXT, "Văn bản"), (IMAGE, "Hình ảnh"), (AUDIO, "Âm thanh"), (VIDEO, "Phim"))
-    the_loai = models.CharField(max_length=3, choices=LUA_CHON_THE_LOAI)
+    the_loai = models.CharField(max_length=20, choices=LUA_CHON_THE_LOAI)
     dinh_kem = models.FileField(blank=True, upload_to='uploads/')
-    DE = 'D'
-    TRUNG_BINH = 'TB'
-    KHO = 'K'
+    DE = 'Dễ'
+    TRUNG_BINH = 'Trung bình'
+    KHO = 'Khó'
     LUA_CHON_DO_KHO = ((DE, "Dễ"), (TRUNG_BINH, "Trung bình"), (KHO, "Khó"))
-    do_kho = models.CharField(max_length=2, choices=LUA_CHON_DO_KHO)
+    do_kho = models.CharField(max_length=20, choices=LUA_CHON_DO_KHO)
 
     class Meta:
         db_table = 'cau_hoi'
@@ -127,6 +128,7 @@ class CauHoi(models.Model):
 class DapAn(models.Model):
     mon = models.ForeignKey(Mon, on_delete=models.CASCADE, related_name='dap_an_mon')
     chu_de = models.ForeignKey(ChuDe, on_delete=models.CASCADE, related_name='dap_an_chu_de')
+    cau_hoi = models.ForeignKey(CauHoi, on_delete=models.CASCADE, related_name='dap_an_cau_hoi')
     noi_dung = models.TextField()
     dung = models.BooleanField(default=False)
 
@@ -146,12 +148,12 @@ class De(models.Model):
     ten = models.CharField(max_length=100)
     mon = models.ForeignKey(Mon, on_delete=models.CASCADE, related_name='de_mon')
     thoi_gian_tao = models.DateTimeField(auto_now_add=True)
-    GKI = "GKI"
-    CKI = "CKI"
-    GKII = "GKII"
-    CKII = "CKII"
-    LUA_CHON_KY_HOC = ((GKI, "giữa kỳ I"), (CKI, "cuối kỳ I"), (GKII, "giữa kỳ II"), (CKII, "cuối kỳ II"))
-    ky_hoc = models.CharField(max_length=4, choices=LUA_CHON_KY_HOC)
+    GKI = "Giữa kỳ I"
+    CKI = "Cuối kỳ I"
+    GKII = "Giữa kỳ II"
+    CKII = "Cuối kỳ II"
+    LUA_CHON_KY_HOC = ((GKI, "Giữa kỳ I"), (CKI, "Cuối kỳ I"), (GKII, "Giữa kỳ II"), (CKII, "Cuối kỳ II"))
+    ky_hoc = models.CharField(max_length=20, choices=LUA_CHON_KY_HOC)
     cau_hoi = models.ManyToManyField(CauHoi, related_name='de_cau_hoi', through='ChiTietDe')
     cau_hoi_html = models.TextField(blank=True)
     dap_an_html = models.TextField(blank=True)
