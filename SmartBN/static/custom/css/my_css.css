@@ -113,3 +113,39 @@
 .correct_answer{
     color:red;
 }
+
+.stepContainer{
+    height: auto !important;
+}
+
+.exam_table{
+    border: 1px solid #E6E9ED;
+    padding: 20px;
+    text-align: center;
+    width:100%;
+    margin-bottom: 20px;
+}
+
+.exam_table tr ,.exam_table td {
+    border: 1px solid #E6E9ED;
+    text-align: center;
+    padding: 10px;
+    padding-bottom: 40px;
+}
+
+.exam {
+    display: block;
+    margin-left: 4em;
+    margin-right: 4em;
+    margin-top: 3em;
+    margin-bottom: 3em;
+    color:black;
+}
+
+ol {
+    font-weight: bold;
+}
+
+li div {
+    font-weight: normal;
+}

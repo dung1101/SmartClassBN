@@ -110,6 +110,8 @@ $(document).ready(function(){
         formData.append('csrfmiddlewaretoken',$("input[name=csrfmiddlewaretoken]").val());
         formData.append('mon',$("#mon option:selected").text());
         formData.append('ky_hoc',$("#ky_hoc option:selected").text());
+        formData.append('so_diem', $("#so_diem input[name='so_diem']").val());
+
         var chu_de = $("#chu_de option:selected").val();
         if( typeof chu_de == 'undefined'){
             Swal.fire({
@@ -129,6 +131,7 @@ $(document).ready(function(){
             });
             return false;
         }
+
         formData.append('noi_dung',noi_dung);
         var so_cau_hoi = $('#so_cau_hoi').val();
         var dang_cau_hoi = $("#dang_cau_hoi option:selected").text();
@@ -317,6 +320,10 @@ function create_editor_q(target){
 }
 
 function tracNhiem(){
+    $("#so_diem input[name='so_diem']").val(-1);
+    $('#so_cau_hoi').prop("readonly",false);
+    $("#so_dap_an").prop("readonly", false);
+    $("#so_diem").hide();
     var nd='';
     var da='';
     if($('#so_cau_hoi').val() < 1){
@@ -334,11 +341,6 @@ function tracNhiem(){
         });
         $('#so_cau_hoi').val(1);
     }else if ($('#so_dap_an').val() < 2) {
-        Swal.fire({
-            type: 'error',
-            title: 'Lỗi',
-            text: 'Số đáp án phải >= 2',
-        });
         $('#so_dap_an').val(2);
     }else if ($('#so_dap_an').val() > 5) {
         Swal.fire({
@@ -391,6 +393,10 @@ function tracNhiem(){
 }
 
 function dienTu(){
+    $("#so_diem input[name='so_diem']").val(1);
+    $('#so_cau_hoi').prop("readonly",true);
+    $("#so_dap_an").prop("readonly", false);
+    $("#so_diem").show();
     $('#so_cau_hoi').val(1);
     var nd='';
     var da='';
@@ -423,6 +429,10 @@ function dienTu(){
 }
 
 function tuLuan(){
+    $("#so_diem input[name='so_diem']").val(1);
+    $('#so_cau_hoi').prop("readonly",false);
+    $("#so_dap_an").prop("readonly", true);
+    $("#so_diem").show();
     $('#so_dap_an').val(1);
     var nd='';
     if($('#so_cau_hoi').val() < 1){
@@ -460,18 +470,15 @@ function tuLuan(){
 function thayDoi(){
     var dang_cau_hoi = $("#dang_cau_hoi option:selected").text();
     if ( dang_cau_hoi.includes("Trắc nhiệm")){
-        $('#so_cau_hoi').prop("readonly",false);
-        $("#so_dap_an").prop("readonly", false);
+
         tracNhiem();
     }
     else if ( dang_cau_hoi.includes("Điền từ")){
-        $('#so_cau_hoi').prop("readonly",true);
-        $("#so_dap_an").prop("readonly", false);
+
         dienTu();
     }
     else{
-        $('#so_cau_hoi').prop("readonly",false);
-        $("#so_dap_an").prop("readonly", true);
+
         tuLuan();
     }
 }

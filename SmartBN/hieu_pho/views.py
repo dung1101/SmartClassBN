@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.contrib.auth.hashers import check_password
@@ -180,7 +181,6 @@ def question(request):
         mon = Mon.objects.get(ten=ten_mon, khoi=int(lop_mon))
         chu_de = ChuDe.objects.get(ten=request.POST['chu_de'])
         the_loai, dang = request.POST['dang_cau_hoi'].split(" + ")
-        print(the_loai, dang)
         if 'nd_cau_hoi' in request.POST:
             ch = CauHoi.objects.create(giao_vien_tao=request.user,
                                        mon=mon,
@@ -190,7 +190,8 @@ def question(request):
                                        ky_hoc=request.POST['ky_hoc'],
                                        dang=dang,
                                        the_loai=the_loai,
-                                       co_cau_hoi_nho=True)
+                                       co_cau_hoi_nho=True,
+                                       so_diem=request.POST['so_diem'])
             for index, nd in enumerate(json.loads(request.POST['nd_cau_hoi'])):
                 cau_hoi_nho = CauHoi.objects.create(giao_vien_tao=request.user,
                                                     mon=mon,
@@ -226,7 +227,8 @@ def question(request):
                                        chu_de=chu_de,
                                        ky_hoc=request.POST['ky_hoc'],
                                        dang=dang,
-                                       the_loai=the_loai)
+                                       the_loai=the_loai,
+                                       so_diem=request.POST['so_diem'])
             if ch.dang == CauHoi.TN:
                 dap_an = json.loads(request.POST['dap_an'])
                 nd_dap_an = json.loads(request.POST['nd_dap_an'])
@@ -258,16 +260,28 @@ def question_list(request):
 
 
 @hp_authenticate
-def question_list_option(request, id, ky_hoc):
+def question_list_option(request, option):
     data = []
-    if ky_hoc == 'GKI':
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=id, ky_hoc="Giữa kỳ I")
-    elif ky_hoc == "CKI":
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=id, ky_hoc__in=["Giữa kỳ I", "Cuối kỳ I"])
-    elif ky_hoc == "GKII":
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=id, ky_hoc="Giữa kỳ II")
+    option = json.loads(option)
+    dang_cau_hoi = []
+    if option['trac_nhiem']:
+        dang_cau_hoi.append(CauHoi.TN)
+    if option['dien_tu']:
+        dang_cau_hoi.append(CauHoi.DT)
+    if option['tu_luan']:
+        dang_cau_hoi.append(CauHoi.TL)
+    if option['ky_hoc'] == 'GKI':
+        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
+                                           ky_hoc="Giữa kỳ I", dang__in=dang_cau_hoi)
+    elif option['ky_hoc'] == "CKI":
+        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
+                                           ky_hoc__in=["Giữa kỳ I", "Cuối kỳ I"], dang__in=dang_cau_hoi)
+    elif option['ky_hoc'] == "GKII":
+        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
+                                           ky_hoc="Giữa kỳ II", dang__in=dang_cau_hoi)
     else:
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=id)
+        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
+                                           dang__in=dang_cau_hoi)
     for cau_hoi in ds_cau_hoi:
         data.append([cau_hoi.id, cau_hoi.chu_de.ten, cau_hoi.dang, cau_hoi.do_kho,
                      cau_hoi.giao_vien_tao.ho_ten, str(cau_hoi.thoi_gian_tao)[:-16]])
@@ -297,20 +311,27 @@ def question_list_data(request, id):
 def question_detail_data(request, id):
     cau_hoi = get_object_or_404(CauHoi, pk=id)
     thoi_gian_tao = str(cau_hoi.thoi_gian_tao)[:-16]
+    if cau_hoi.dang != CauHoi.TN:
+        so_diem = "<h4>Điểm số: {} điểm</h4>".format(cau_hoi.so_diem)
+    else:
+        so_diem = ""
     if cau_hoi.co_cau_hoi_nho:
         chi_tiet = """
         <input type="hidden" value={cau_hoi.id} name='id'>
         <input type="hidden" value='{cau_hoi.dang}' name='dang'>
+        <input type="hidden" value='{cau_hoi.so_diem}' name='so_diem'>
         <div id=chi_tiet_{cau_hoi.id} style="display:block;">
             <h4>Môn: {cau_hoi.mon.ten_dai}</h4>
             <h4>Chủ đề: {cau_hoi.chu_de.ten}</h4>
+            <h4>Độ khó: {cau_hoi.do_kho}</h4>
+            {so_diem}
             <h4>Giáo viên tạo: {cau_hoi.giao_vien_tao.ho_ten}</h4>
             <h5>Ngày tạo: {thoi_gian_tao}</h5>
             <hr>
             {cau_hoi.noi_dung}
             "<ol type='a'>"
         </div>
-        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao)
+        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao, so_diem=so_diem)
         for index, ch in enumerate(cau_hoi.cau_hoi_nho.all()):
             chi_tiet += "<li>{}<ol type='A'>".format(ch.noi_dung)
             for index, da in enumerate(ch.dap_an.all()):
@@ -327,15 +348,18 @@ def question_detail_data(request, id):
         chi_tiet = """
         <input type="hidden" value={cau_hoi.id} name='id'>
         <input type="hidden" value='{cau_hoi.dang}' name='dang'>
+        <input type="hidden" value='{cau_hoi.so_diem}' name='so_diem'>
         <div id=chi_tiet_{cau_hoi.id} style="display:block;">
             <h4>Môn: {cau_hoi.mon.ten_dai}</h4>
             <h4>Chủ đề: {cau_hoi.chu_de.ten}</h4>
+            <h4>Độ khó: {cau_hoi.do_kho}</h4>
+            {so_diem}
             <h4>Giáo viên tạo: {cau_hoi.giao_vien_tao.ho_ten}</h4>
             <h5>Ngày tạo: {thoi_gian_tao}</h5>
             <hr>
             {cau_hoi.noi_dung}
             <ol type='A'>
-        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao)
+        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao, so_diem=so_diem)
         for index, da in enumerate(cau_hoi.dap_an.all()):
             if da.dung:
                 dung = "correct_answer"
@@ -351,75 +375,124 @@ def question_detail_data(request, id):
 @hp_authenticate
 def question_detail_review(request, cau_truc):
     cau_truc = json.loads(cau_truc)
-    print(cau_truc)
-    diem_tn = round(cau_truc['pt_tn']/10/cau_truc['so_tn'], 2)
-    print(diem_tn)
-    chi_tiet = "<h1>Phần trắc nhiệm</h1>"
-    for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Trắc nhiệm")):
-        if cau_hoi.co_cau_hoi_nho:
-            ds_cau_hoi_nho = cau_hoi.cau_hoi_nho.all()
-            diem_con = round(diem_tn / len(ds_cau_hoi_nho), 2)
-            chi_tiet += """
-                <h4>Câu {index} ({diem} điểm)</h4>
-                {cau_hoi.noi_dung}
-                <ol type='a'>
-            """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem_tn)
-            for ch in ds_cau_hoi_nho:
-                chi_tiet += "<li>({diem} điểm){}<ol type='A'>".format(ch.noi_dung, diem=diem_con)
-                for da in ch.dap_an.all():
+    chi_tiet = """"""
+    if cau_truc['so_tn'] > 0:
+        diem_tn = round(cau_truc['pt_tn']/10/cau_truc['so_tn'], 2)
+        chi_tiet += "<b><u>Phần:</u> Trắc nhiệm</b><br>"
+        for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Trắc nhiệm")):
+            if cau_hoi.co_cau_hoi_nho:
+                ds_cau_hoi_nho = cau_hoi.cau_hoi_nho.all()
+                diem_con = round(diem_tn / len(ds_cau_hoi_nho), 2)
+                chi_tiet += """
+                    <b>Câu {index} </b>({diem} điểm)
+                    {cau_hoi.noi_dung}
+                    <ol type='a'>
+                """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem_tn)
+                for ch in ds_cau_hoi_nho:
+                    chi_tiet += "<li><div>({diem} điểm){}<ol type='A'>".format(ch.noi_dung, diem=diem_con)
+                    for da in ch.dap_an.all():
+                        chi_tiet += """
+                        <li><div>{da.noi_dung}</div></li>
+                        """.format(da=da)
+                    chi_tiet += "</ol></div></li>"
+                chi_tiet += "</ol>"
+            else:
+                chi_tiet += """
+                    <b>Câu {index} </b>({diem} điểm)
+                    {cau_hoi.noi_dung}
+                    <ol type='A'>
+                """.format(cau_hoi=cau_hoi, index=index+1, diem=diem_tn)
+                for da in cau_hoi.dap_an.all():
                     chi_tiet += """
-                    <li>{da.noi_dung}</li>
+                    <li><div>{da.noi_dung}</div></li>
                     """.format(da=da)
-                chi_tiet += "</ol></li>"
-            chi_tiet += "</ol>"
-        else:
+                chi_tiet += "</ol>"
+
+    if cau_truc['so_dt'] > 0:
+        chi_tiet += "<b><u>Phần:</u> Điền từ</u></b><br>"
+        for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Điền từ")):
             chi_tiet += """
-                <h4>Câu {index} ({diem} điểm)</h4>
+                <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
                 {cau_hoi.noi_dung}
-                <ol type='A'>
-            """.format(cau_hoi=cau_hoi, index=index+1, diem=diem_tn)
+                <ol type='1'>
+            """.format(cau_hoi=cau_hoi, index=index+1)
             for da in cau_hoi.dap_an.all():
                 chi_tiet += """
                 <li>{da.noi_dung}</li>
                 """.format(da=da)
             chi_tiet += "</ol>"
-    chi_tiet += "<h1>Phần điền từ</h1>"
-    for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Điền từ")):
-        chi_tiet += """
-            <h4>Câu {index} (? điểm)</h4>
-            {cau_hoi.noi_dung}
-            <ol type='1'>
-        """.format(cau_hoi=cau_hoi, index=index+1)
-        for da in cau_hoi.dap_an.all():
-            chi_tiet += """
-            <li>{da.noi_dung}</li>
-            """.format(da=da)
-        chi_tiet += "</ol>"
-    chi_tiet += "<h1>Phần tự luận</h1>"
-    for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Tự luận")):
-        if cau_hoi.co_cau_hoi_nho:
-            chi_tiet += """
-                <h4>Câu {index} (? điểm)</h4>
-                {cau_hoi.noi_dung}
-                <ol type='a'>
-            """.format(cau_hoi=cau_hoi, index=index + 1)
-            for ch in cau_hoi.cau_hoi_nho.all():
-                chi_tiet += "<li>(? điểm){}</li>".format(ch.noi_dung)
-            chi_tiet += "</ol>"
-        else:
-            chi_tiet += """
-                <h4>Câu {index} (? điểm)</h4>
-                {cau_hoi.noi_dung}
-            """.format(cau_hoi=cau_hoi, index=index+1)
+
+    if cau_truc['so_tl'] > 0:
+        chi_tiet += "<b><u>Phần:</u> Tự luận</u></b><br>"
+        for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Tự luận")):
+            if cau_hoi.co_cau_hoi_nho:
+                chi_tiet += """
+                    <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                    {cau_hoi.noi_dung}
+                    <ol type='a'>
+                """.format(cau_hoi=cau_hoi, index=index + 1)
+                for ch in cau_hoi.cau_hoi_nho.all():
+                    chi_tiet += "<li>{}</li>".format(ch.noi_dung)
+                chi_tiet += "</ol>"
+            else:
+                chi_tiet += """
+                    <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                    {cau_hoi.noi_dung}
+                """.format(cau_hoi=cau_hoi, index=index+1)
     return HttpResponse(chi_tiet)
 
 
 @hp_authenticate
 def manual_create_exam(request):
+    if request.method == 'POST':
+        De.objects.create(mon_id=request.POST['mon'],
+                          thoi_gian=request.POST['thoi_gian'],
+                          giao_vien_tao=request.user,
+                          ky_hoc=request.POST['ky_hoc'],
+                          cau_hoi_html=request.POST['de'])
+        return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
+    now = datetime.datetime.now()
+    if now.month < 7:
+        year = [now.year - 1, now.year]
+    else:
+        year = [now.year, now.year + 1]
+    content = {
+        "list_mon": Mon.objects.all(),
+        "year": year,
+    }
+    return render(request, 'hieu_pho/manual_create_exam.html', content)
+
+
+@hp_authenticate
+def exam_list(request):
     content = {
         "list_mon": Mon.objects.all(),
     }
-    return render(request, 'hieu_pho/manual_create_exam.html', content)
+    return render(request, 'hieu_pho/list_exam.html', content)
+
+
+@hp_authenticate
+def exam_list_data(request, id):
+    if id == 0:
+        ds_de = De.objects.all()
+    else:
+        ds_de = De.objects.filter(mon=Mon.objects.get(id=id))
+    data = []
+    for de in ds_de:
+        mon = '<p id="mon_{de.id}">{de.mon.ten_dai}</p>'.format(de=de)
+        thoi_gian = '<p id="thoi_gian_{de.id}">{de.thoi_gian}</p>'.format(de=de)
+        ky_hoc = '<p id="ky_hoc_{de.id}">{de.ky_hoc}</p>'.format(de=de)
+        thoi_gian_tao = '<p id="thoi_gian_tao_{cau_hoi.id}">{thoi_gian_tao}' \
+                        '</p>'.format(cau_hoi=de, thoi_gian_tao=str(de.thoi_gian_tao)[:-16])
+        giao_vien_tao = '<p id="giao_vien_tao_{de.id}">{de.giao_vien_tao.ho_ten}</p>'.format(de=de)
+        data.append([mon, thoi_gian, ky_hoc, thoi_gian_tao, giao_vien_tao])
+    return JsonResponse({"data": data})
+
+
+@hp_authenticate
+def exam_detail(request, id):
+    de = get_object_or_404(De, pk=id)
+    return HttpResponse(de.cau_hoi_html)
 
 
 @hp_authenticate

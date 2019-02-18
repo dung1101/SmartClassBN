@@ -84,7 +84,7 @@ class CauHoi(models.Model):
     giao_vien_tao = models.ForeignKey(GiaoVien, on_delete=models.CASCADE, related_name='cau_hoi_giao_vien')
     thoi_gian_tao = models.DateTimeField(auto_now_add=True)
     noi_dung = models.TextField()
-    diem = models.IntegerField(null=True)
+    so_diem = models.FloatField(null=True)
     co_cau_hoi_nho = models.BooleanField(default=False)
     la_cau_hoi_nho = models.BooleanField(default=False)
     cau_hoi_nho = models.ManyToManyField("self", related_name='cau_hoi_nho', db_table='cau_hoi_da')
@@ -145,16 +145,16 @@ class DapAn(models.Model):
 
 
 class De(models.Model):
-    ten = models.CharField(max_length=100)
     mon = models.ForeignKey(Mon, on_delete=models.CASCADE, related_name='de_mon')
     thoi_gian_tao = models.DateTimeField(auto_now_add=True)
+    thoi_gian = models.CharField(max_length=20)
+    giao_vien_tao = models.ForeignKey(GiaoVien, on_delete=models.CASCADE, related_name='de_giao_vien')
     GKI = "Giữa kỳ I"
     CKI = "Cuối kỳ I"
     GKII = "Giữa kỳ II"
     CKII = "Cuối kỳ II"
     LUA_CHON_KY_HOC = ((GKI, "Giữa kỳ I"), (CKI, "Cuối kỳ I"), (GKII, "Giữa kỳ II"), (CKII, "Cuối kỳ II"))
     ky_hoc = models.CharField(max_length=20, choices=LUA_CHON_KY_HOC)
-    cau_hoi = models.ManyToManyField(CauHoi, related_name='de_cau_hoi', through='ChiTietDe')
     cau_hoi_html = models.TextField(blank=True)
     dap_an_html = models.TextField(blank=True)
 
@@ -162,12 +162,12 @@ class De(models.Model):
         db_table = 'de'
 
 
-class ChiTietDe(models.Model):
-    cau_hoi = models.ForeignKey(CauHoi, on_delete=models.SET_NULL, null=True, related_name='chi_tiet_de_cau_hoi')
-    de = models.ForeignKey(De, on_delete=models.CASCADE, related_name='chi_tiet_de_de')
-
-    class Meta:
-        db_table = 'chi_tiet_de'
+# class ChiTietDe(models.Model):
+#     cau_hoi = models.ForeignKey(CauHoi, on_delete=models.SET_NULL, null=True, related_name='chi_tiet_de_cau_hoi')
+#     de = models.ForeignKey(De, on_delete=models.CASCADE, related_name='chi_tiet_de_de')
+#
+#     class Meta:
+#         db_table = 'chi_tiet_de'
 
 
 

@@ -59,7 +59,7 @@
                                 <h5><b>Tên đề</b></h5>
                             </div>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" name="ten_de" placeholder="Tên đề">
+                                <input type="text" class="form-control" name="ten_de" id="ten_de" value="Khảo sát chất lượng">
                             </div>
                         </div>
                         <br>
@@ -78,15 +78,33 @@
                         <br>
                         <div class="row">
                             <div class="col-md-3" >
-                                <h5><b>Kỳ hoc</b></h5>
+                                <h5><b>Kỳ học</b></h5>
                             </div>
                             <div class="col-md-9">
                                 <select class="form-control" id="ky_hoc">
-                                    <option value="GKI">Giữa kỳ I</option>
-                                    <option value="CKI">Cuối kỳ I</option>
-                                    <option value="GKII">Giữa kỳ II</option>
-                                    <option value="CKII">Cuối kỳ II</option>
+                                    <option value="GKI" data-show="giữa kỳ I">Giữa kỳ I</option>
+                                    <option value="CKI" data-show="cuối kỳ I">Cuối kỳ I</option>
+                                    <option value="GKII" data-show="giữa kỳ II">Giữa kỳ II</option>
+                                    <option value="CKII" data-show="cuối năm">Cuối kỳ II</option>
                                 </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-3" >
+                                <h5><b>Năm học</b></h5>
+                            </div>
+                            <div class="col-md-9">
+                                <table style="width:100%;">
+                                    <tr>
+                                        <td>
+                                            <input type="number" min="2012" max="3000" id="year_0" size="4" value="{{year.0}}" class="form-control">
+                                        </td>
+                                        <td>
+                                            <input type="number" min="2012" max="3000" id="year_1" size="4" value="{{year.1}}" class="form-control">
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                         <br>
@@ -134,7 +152,7 @@
                                             <input type="number" class="form-control so_luong" min=0 max=100 name="sl_dt" value="0" disabled>
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control phan_tram" min=0 max=100 name="pt_dt" value="0" disabled>
+                                            <input type="number" class="form-control phan_tram chon_diem" min=0 max=100 name="pt_dt" value="0" disabled>
                                         </td>
                                     </tr>
                                     <tr class="mytable">
@@ -144,7 +162,7 @@
                                             <input type="number" class="form-control so_luong" min=0 max=100 name="sl_tl" value="0" disabled>
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control phan_tram" min=0 max=100 name="pt_tl" value="0" disabled>
+                                            <input type="number" class="form-control phan_tram chon_diem" min=0 max=100 name="pt_tl" value="0" disabled>
                                         </td>
                                     </tr>
                                 </table>
@@ -217,8 +235,50 @@
                   </div>
               </div>
             </div>
-              <div id="step-3">
-                <div id="3_con">
+              <div id="step-3" class="exam">
+                <div class="row" id="tieude" style="text-align:center">
+                    <div class="col-md-4">
+                        <h5><b>{{user.truong.ten}}</b></h5>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-6">
+                        <h5><b id="exam_name">Khảo sát chất lượng học kì I</b></h5>
+                        <h5><b id="exam_year">Năm học 2018 - 2019</b></h5>
+                        <b id="exam_subject">Môn : Toán 8 </b><i id="exam_time">(Thời gian làm bài 90 phút)</i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-7">
+                        <p>Họ tên học sinh: .................................................................................................................................</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p>Lớp:............</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <table class="exam_table">
+                        <tr>
+                            <td width="40%">Chữ kí của giám thị 1</td>
+                            <td width="40%">Chữ kí của giám thị 2</td>
+                            <td width="20%">Số Phách</td>
+                        </tr>
+                    </table>
+                    <table class="exam_table">
+                        <tr>
+                            <td width="20%">Điểm bằng số</td>
+                            <td width="20%">Điểm bằng chữ</td>
+                            <td width="40%">Chữ kí của giáo viên</td>
+                            <td width="20%">Số Phách</td>
+                        </tr>
+                    </table>
+                    <div>
+                        <b style="float: left;"><u>Đề bài</u></b>
+                    </div>
+                </div>
+                <div id="3_con" style="margin-right: -10px; margin-left: -10px;">
 
                 </div>
             </div>
