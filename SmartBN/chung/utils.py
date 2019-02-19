@@ -1,4 +1,4 @@
-from django.conf import settings
+import random
 
 
 def handle_uploaded_file(f):

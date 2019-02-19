@@ -1,5 +1,6 @@
 import datetime
 import json
+import random
 
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ObjectDoesNotExist
@@ -179,7 +180,7 @@ def question(request):
     if request.method == "POST":
         ten_mon, lop_mon = request.POST['mon'].split(" - ")
         mon = Mon.objects.get(ten=ten_mon, khoi=int(lop_mon))
-        chu_de = ChuDe.objects.get(ten=request.POST['chu_de'])
+        chu_de = mon.chu_de.get(ten=request.POST['chu_de'])
         the_loai, dang = request.POST['dang_cau_hoi'].split(" + ")
         if 'nd_cau_hoi' in request.POST:
             ch = CauHoi.objects.create(giao_vien_tao=request.user,
@@ -248,7 +249,7 @@ def question(request):
             handle_uploaded_file(request.FILES['dinh_kem'])
         ch.save()
         return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
-    return render(request, 'hieu_pho/create_question.html', content)
+    return render(request, 'hieu_pho/question_create.html', content)
 
 
 @hp_authenticate
@@ -256,7 +257,7 @@ def question_list(request):
     content = {
         "list_mon": Mon.objects.all(),
     }
-    return render(request, 'hieu_pho/list_question.html', content)
+    return render(request, 'hieu_pho/question_list.html', content)
 
 
 @hp_authenticate
@@ -414,13 +415,13 @@ def question_detail_review(request, cau_truc):
             chi_tiet += """
                 <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
                 {cau_hoi.noi_dung}
-                <ol type='1'>
+                
             """.format(cau_hoi=cau_hoi, index=index+1)
-            for da in cau_hoi.dap_an.all():
-                chi_tiet += """
-                <li>{da.noi_dung}</li>
-                """.format(da=da)
-            chi_tiet += "</ol>"
+            # for da in cau_hoi.dap_an.all():
+            #     chi_tiet += """
+            #     <li>{da.noi_dung}</li>
+            #     """.format(da=da)
+            # chi_tiet += "</ol>"
 
     if cau_truc['so_tl'] > 0:
         chi_tiet += "<b><u>Phần:</u> Tự luận</u></b><br>"
@@ -443,7 +444,7 @@ def question_detail_review(request, cau_truc):
 
 
 @hp_authenticate
-def manual_create_exam(request):
+def exam_create_manual(request):
     if request.method == 'POST':
         De.objects.create(mon_id=request.POST['mon'],
                           thoi_gian=request.POST['thoi_gian'],
@@ -460,7 +461,118 @@ def manual_create_exam(request):
         "list_mon": Mon.objects.all(),
         "year": year,
     }
-    return render(request, 'hieu_pho/manual_create_exam.html', content)
+    return render(request, 'hieu_pho/exam_create_manual.html', content)
+
+
+@hp_authenticate
+def exam_create_auto(request):
+    if request.method == 'POST':
+        cau_truc = json.loads(request.POST['cau_truc'])
+        chi_tiet_so_luong = json.loads(request.POST['chi_tiet_so_luong'])
+        print(request.POST)
+        mon = Mon.objects.get(id=int(request.POST['mon']))
+        if request.POST['ky_hoc'] == 'Giữa kì I':
+            ky_hoc = ['Giữa kì I', ]
+        elif request.POST['ky_hoc'] == 'Cuối kì I':
+            ky_hoc = ['Giữa kì I', 'Cuối kì I']
+        elif request.POST['ky_hoc'] == 'Giữa kì II':
+            ky_hoc = ['Giữa kì II', ]
+        else:
+            ky_hoc = ['Giữa kì I', 'Cuối kì I', "Giữa kì II", 'Cuối kì II']
+        for dang, chi_tiet_chu_de in chi_tiet_so_luong.items():
+            if dang == "Trắc nhiệm":
+                for chu_de, so_luong in chi_tiet_chu_de.items():
+                    print(chu_de, so_luong)
+                    ds_tn = []
+                    if chu_de == 'Tất cả':
+                        if 'r_tn_d' in so_luong.keys():
+                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                               la_cau_hoi_nho=False,
+                                                               ky_hoc__in=ky_hoc,
+                                                               dang="Trắc nhiệm",
+                                                               do_kho=CauHoi.DE)
+                            try:
+                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_d']))
+                            except ValueError:
+                                return JsonResponse({"status": "False", "messages": 'Không đủ câu hỏi trắc nhiệm dễ'})
+
+                        if 'r_tn_tb' in so_luong.keys():
+                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                               la_cau_hoi_nho=False,
+                                                               ky_hoc__in=ky_hoc,
+                                                               dang="Trắc nhiệm",
+                                                               do_kho=CauHoi.TRUNG_BINH)
+                            try:
+                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
+                            except ValueError:
+                                return JsonResponse({"status": "False",
+                                                     "messages": 'Không đủ câu hỏi trắc nhiệm trung bình'})
+
+                        if 'r_tn_k' in so_luong.keys():
+                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                               la_cau_hoi_nho=False,
+                                                               ky_hoc__in=ky_hoc,
+                                                               dang="Trắc nhiệm",
+                                                               do_kho=CauHoi.KHO)
+                            try:
+                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
+                            except ValueError:
+                                return JsonResponse({"status": "False",
+                                                     "messages": 'Không đủ câu hỏi trắc nhiệm khó'})
+                    else:
+                        if 'r_tn_d' in so_luong.keys():
+                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                               la_cau_hoi_nho=False,
+                                                               ky_hoc__in=ky_hoc,
+                                                               dang="Trắc nhiệm",
+                                                               do_kho=CauHoi.DE,
+                                                               chu_de=ChuDe.objects.get(ten=chu_de))
+                            try:
+                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_d']))
+                            except ValueError:
+                                return JsonResponse({"status": "False", "messages": 'Không đủ câu hỏi trắc nhiệm dễ'})
+
+                        if 'r_tn_tb' in so_luong.keys():
+                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                               la_cau_hoi_nho=False,
+                                                               ky_hoc__in=ky_hoc,
+                                                               dang="Trắc nhiệm",
+                                                               do_kho=CauHoi.TRUNG_BINH,
+                                                               chu_de=ChuDe.objects.get(ten=chu_de))
+                            try:
+                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
+                            except ValueError:
+                                return JsonResponse({"status": "False",
+                                                     "messages": 'Không đủ câu hỏi trắc nhiệm trung bình'})
+
+                        if 'r_tn_k' in so_luong.keys():
+                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                               la_cau_hoi_nho=False,
+                                                               ky_hoc__in=ky_hoc,
+                                                               dang="Trắc nhiệm",
+                                                               do_kho=CauHoi.KHO,
+                                                               chu_de=ChuDe.objects.get(ten=chu_de))
+                            try:
+                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
+                            except ValueError:
+                                return JsonResponse({"status": "False",
+                                                     "messages": 'Không đủ câu hỏi trắc nhiệm khó'})
+                    print(ds_tn)
+            elif dang == "Điền từ":
+                pass
+            else:
+                pass
+        return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
+    now = datetime.datetime.now()
+    if now.month < 7:
+        year = [now.year - 1, now.year]
+    else:
+        year = [now.year, now.year + 1]
+    content = {
+        "list_mon": Mon.objects.all(),
+        "year": year,
+    }
+    return render(request, 'hieu_pho/exam_create_auto.html', content)
 
 
 @hp_authenticate
@@ -468,7 +580,7 @@ def exam_list(request):
     content = {
         "list_mon": Mon.objects.all(),
     }
-    return render(request, 'hieu_pho/list_exam.html', content)
+    return render(request, 'hieu_pho/exam_list.html', content)
 
 
 @hp_authenticate
@@ -485,7 +597,7 @@ def exam_list_data(request, id):
         thoi_gian_tao = '<p id="thoi_gian_tao_{cau_hoi.id}">{thoi_gian_tao}' \
                         '</p>'.format(cau_hoi=de, thoi_gian_tao=str(de.thoi_gian_tao)[:-16])
         giao_vien_tao = '<p id="giao_vien_tao_{de.id}">{de.giao_vien_tao.ho_ten}</p>'.format(de=de)
-        data.append([mon, thoi_gian, ky_hoc, thoi_gian_tao, giao_vien_tao])
+        data.append([mon, giao_vien_tao, thoi_gian_tao, thoi_gian, ky_hoc])
     return JsonResponse({"data": data})
 
 

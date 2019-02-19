@@ -26,7 +26,8 @@ urlpatterns = [
     ])),
 
     path('exam', include([
-        path('_manual', views.manual_create_exam, name='manual_create_exam'),
+        path('_manual', views.exam_create_manual, name='exam_create_manual'),
+        path('_auto', views.exam_create_auto, name='exam_create_auto'),
         path('_detail_<int:id>', views.exam_detail, name='exam_detail'),
         path('_list', views.exam_list, name='exam_list'),
         path('_list_data_<int:id>', views.exam_list_data, name='exam_list_data'),

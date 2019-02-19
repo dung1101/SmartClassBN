@@ -1,0 +1,263 @@
+{% extends 'hieu_pho/base.html' %}
+
+{% load static %}
+
+
+{% block title %}{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'custom/css/my_css.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<div id="tab_content2">
+    <div class="x_panel">
+        <div class="x_content">
+            <div class="">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <h5><b>Tên đề</b></h5>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" name="r_ten_de" placeholder="Tên đề" value="Khảo sát chất lượng">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2" >
+                                <h5><b>Môn</b></h5>
+                            </div>
+                            <div class="col-md-10">
+                                <select class="form-control" id="r_gv_mon">
+                                    {% for mon in list_mon %}
+                                    <option value="{{ mon.id }}">{{ mon.ten_dai }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2" >
+                                <h5><b>Kỳ học</b></h5>
+                            </div>
+                            <div class="col-md-10">
+                                <select class="form-control" id="ky_hoc">
+                                    <option value="GKI" data-show="giữa kỳ I">Giữa kỳ I</option>
+                                    <option value="CKI" data-show="cuối kỳ I">Cuối kỳ I</option>
+                                    <option value="GKII" data-show="giữa kỳ II">Giữa kỳ II</option>
+                                    <option value="CKII" data-show="cuối năm">Cuối kỳ II</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2" >
+                                <h5><b>Năm học</b></h5>
+                            </div>
+                            <div class="col-md-10">
+                                <table style="width:100%;">
+                                    <tr>
+                                        <td>
+                                            <input type="number" min="2012" max="3000" id="year_0" size="4" value="{{year.0}}" class="form-control">
+                                        </td>
+                                        <td>
+                                            <input type="number" min="2012" max="3000" id="year_1" size="4" value="{{year.1}}" class="form-control">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2" >
+                                <h5><b>Thời gian</b></h5>
+                            </div>
+                            <div class="col-md-10">
+                                <select class="form-control" id="r_thoi_gian">
+                                    <option value="10">10 phút</option>
+                                    <option value="15">15 phút</option>
+                                    <option value="45">45 phút</option>
+                                    <option value="60">60 phút</option>
+                                    <option value="90" selected>90 phút</option>
+                                    <option value="120">120 phút</option>
+                                    <option value="180">180 phút</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <h5><b>Số đề</b></h5>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="number" class="form-control" name="r_so_de"  value="1" min="1" max="10">
+                            </div>
+                        </div>
+                        <br>
+
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col-md-1"></div>
+                    <div class="exam_option col-md-10">
+                        <h4 class="exam_option_title"> Trắc nhiệm </h4>
+                        <div class="exam_option_body">
+                            <div class="row exam_option_row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-3" >
+                                    <h5><b>Chủ đề</b></h5>
+                                </div>
+                                <div class="col-md-7">
+                                    <input class="form-control" type="text" id="search_chu_de_tn" name="search" placeholder="Chọn chủ đề" list="ds_chu_de_tn">
+                                    <datalist id="ds_chu_de_tn">
+
+                                    </datalist>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                            <div class="row exam_option_row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-3" >
+                                    <h5><b>Phần trăm điểm</b></h5>
+                                </div>
+                                <div class="col-md-7">
+                                    <td>
+                                        <input type="number" class="form-control r_trac_nhiem r_phan_tram" min=0 max=100 name="r_pt_tn" value="0">
+                                    </td>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                            <div class="row exam_option_row">
+                                <table style="width: 100%;"  class="mytable" id="table_tn">
+                                    <tr class="mytable">
+                                        <td width="40%"><b>Chủ đề</b></td>
+                                        <td width="20%"><b>Số câu dễ</b></td>
+                                        <td width="20%"><b>Số câu trung bình</b></td>
+                                        <td width="20%"><b>Số câu khó</b></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="exam_option col-md-10">
+                        <h4 class="exam_option_title"> Điền từ </h4>
+                        <div class="exam_option_body">
+                            <div class="row exam_option_row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-3" >
+                                    <h5><b>Chủ đề</b></h5>
+                                </div>
+                                <div class="col-md-7">
+                                    <input class="form-control" type="text" id="search_chu_de_dt" name="search" placeholder="Chọn chủ đề" list="ds_chu_de_dt">
+                                    <datalist id="ds_chu_de_dt">
+
+                                    </datalist>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                            <div class="row exam_option_row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-3" >
+                                    <h5><b>Phần trăm điểm</b></h5>
+                                </div>
+                                <div class="col-md-7">
+                                    <td>
+                                        <input type="number" class="form-control r_trac_nhiem r_phan_tram" min=0 max=100 name="r_pt_dt" value="0">
+                                    </td>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                            <div class="row exam_option_row">
+                                <table style="width: 100%;"  class="mytable" id="table_dt">
+                                    <tr class="mytable">
+                                        <td width="40%"><b>Chủ đề</b></td>
+                                        <td width="20%"><b>Số câu dễ</b></td>
+                                        <td width="20%"><b>Số câu trung bình</b></td>
+                                        <td width="20%"><b>Số câu khó</b></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="exam_option col-md-10">
+                        <h4 class="exam_option_title"> Tự luận </h4>
+                        <div class="exam_option_body">
+                            <div class="row exam_option_row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-3" >
+                                    <h5><b>Chủ đề</b></h5>
+                                </div>
+                                <div class="col-md-7">
+                                    <input class="form-control" type="text" id="search_chu_de_tl" name="search" placeholder="Chọn chủ đề" list="ds_chu_de_tl">
+                                    <datalist id="ds_chu_de_tl">
+
+                                    </datalist>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                            <div class="row exam_option_row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-3" >
+                                    <h5><b>Phần trăm điểm</b></h5>
+                                </div>
+                                <div class="col-md-7">
+                                    <td>
+                                        <input type="number" class="form-control r_trac_nhiem r_phan_tram" min=0 max=100 name="r_pt_tl" value="0">
+                                    </td>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                            <div class="row exam_option_row">
+                                <table style="width: 100%;"  class="mytable" id="table_tl">
+                                    <tr class="mytable">
+                                        <td width="40%"><b>Chủ đề</b></td>
+                                        <td width="20%"><b>Số câu dễ</b></td>
+                                        <td width="20%"><b>Số câu trung bình</b></td>
+                                        <td width="20%"><b>Số câu khó</b></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <button class="btn btn-success" style="width:100%" id="r_tao_de"><i class="fa fa-random"></i> Tạo đề</button>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var mon = {};
+    {% for mon in list_mon %}
+        mon['{{mon.ten_dai}}'] = '<option value="Tất cả" data-id="0" class="chon_chu_de">';
+        {% for chu_de in mon.chu_de.all %}
+            mon['{{mon.ten_dai}}'] += '<option value="{{chu_de.ten}}" data-id="{{chu_de.id}}" class="chon_chu_de">'
+        {% endfor %}
+    {% endfor %}
+</script>
+<script src="{% static 'custom/js/hieu_pho/exam_create_auto.js' %}"></script>
+{% endblock %}

@@ -78,14 +78,14 @@
                         <br>
                         <div class="row">
                             <div class="col-md-3" >
-                                <h5><b>Kỳ học</b></h5>
+                                <h5><b>kì học</b></h5>
                             </div>
                             <div class="col-md-9">
                                 <select class="form-control" id="ky_hoc">
-                                    <option value="GKI" data-show="giữa kỳ I">Giữa kỳ I</option>
-                                    <option value="CKI" data-show="cuối kỳ I">Cuối kỳ I</option>
-                                    <option value="GKII" data-show="giữa kỳ II">Giữa kỳ II</option>
-                                    <option value="CKII" data-show="cuối năm">Cuối kỳ II</option>
+                                    <option value="GKI" data-show="giữa kì I">Giữa kì I</option>
+                                    <option value="CKI" data-show="cuối kì I">Cuối kì I</option>
+                                    <option value="GKII" data-show="giữa kì II">Giữa kì II</option>
+                                    <option value="CKII" data-show="cuối năm">Cuối kì II</option>
                                 </select>
                             </div>
                         </div>
@@ -118,7 +118,7 @@
                                     <option value="15">15 phút</option>
                                     <option value="45">45 phút</option>
                                     <option value="60">60 phút</option>
-                                    <option value="90">90 phút</option>
+                                    <option value="90" selected>90 phút</option>
                                     <option value="120">120 phút</option>
                                     <option value="180">180 phút</option>
                                 </select>
@@ -252,7 +252,7 @@
                     <div class="col-md-2">
                     </div>
                     <div class="col-md-7">
-                        <p>Họ tên học sinh: .................................................................................................................................</p>
+                        <p>Họ tên học sinh: ............................................................................</p>
                     </div>
                     <div class="col-md-3">
                         <p>Lớp:............</p>
@@ -278,7 +278,7 @@
                         <b style="float: left;"><u>Đề bài</u></b>
                     </div>
                 </div>
-                <div id="3_con" style="margin-right: -10px; margin-left: -10px;">
+                <div id="3_con" class="exam_body">
 
                 </div>
             </div>
@@ -316,5 +316,5 @@
 <script src="{% static 'math/katex.min.js' %}"></script>
 <script src="{% static 'math/highlight.min.js' %}" ></script>
 <script src="{% static 'math/quill/quill.min.js' %}"></script>
-<script src="{% static 'custom/js/hieu_pho/manual_create_exam.js' %}"></script>
+<script src="{% static 'custom/js/hieu_pho/exam_create_manual.js' %}"></script>
 {% endblock %}
