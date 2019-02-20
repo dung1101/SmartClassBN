@@ -89,11 +89,11 @@ class CauHoi(models.Model):
     la_cau_hoi_nho = models.BooleanField(default=False)
     cau_hoi_nho = models.ManyToManyField("self", related_name='cau_hoi_nho', db_table='cau_hoi_da')
     dap_an = models.ManyToManyField("DapAn", related_name='cau_hoi_dap_an', db_table="dap_an_cau_hoi")
-    GKI = "Giữa kỳ I"
-    CKI = "Cuối kỳ I"
-    GKII = "Giữa kỳ II"
-    CKII = "Cuối kỳ II"
-    LUA_CHON_KY_HOC = ((GKI, "Giữa kỳ I"), (CKI, "Cuối kỳ I"), (GKII, "Giữa kỳ II"), (CKII, "Cuối kỳ II"))
+    GKI = "Giữa kì I"
+    CKI = "Cuối kì I"
+    GKII = "Giữa kì II"
+    CKII = "Cuối kì II"
+    LUA_CHON_KY_HOC = ((GKI, "Giữa kì I"), (CKI, "Cuối kì I"), (GKII, "Giữa kì II"), (CKII, "Cuối kì II"))
     ky_hoc = models.CharField(max_length=20, choices=LUA_CHON_KY_HOC)
     TN = "Trắc nhiệm"
     DT = "Điền từ"
@@ -149,11 +149,11 @@ class De(models.Model):
     thoi_gian_tao = models.DateTimeField(auto_now_add=True)
     thoi_gian = models.CharField(max_length=20)
     giao_vien_tao = models.ForeignKey(GiaoVien, on_delete=models.CASCADE, related_name='de_giao_vien')
-    GKI = "Giữa kỳ I"
-    CKI = "Cuối kỳ I"
-    GKII = "Giữa kỳ II"
-    CKII = "Cuối kỳ II"
-    LUA_CHON_KY_HOC = ((GKI, "Giữa kỳ I"), (CKI, "Cuối kỳ I"), (GKII, "Giữa kỳ II"), (CKII, "Cuối kỳ II"))
+    GKI = "Giữa kì I"
+    CKI = "Cuối kì I"
+    GKII = "Giữa kì II"
+    CKII = "Cuối kì II"
+    LUA_CHON_KY_HOC = ((GKI, "Giữa kì I"), (CKI, "Cuối kì I"), (GKII, "Giữa kì II"), (CKII, "Cuối kì II"))
     ky_hoc = models.CharField(max_length=20, choices=LUA_CHON_KY_HOC)
     cau_hoi_html = models.TextField(blank=True)
     dap_an_html = models.TextField(blank=True)

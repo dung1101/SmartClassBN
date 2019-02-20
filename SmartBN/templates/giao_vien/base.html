@@ -53,21 +53,25 @@
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
                 <ul class="nav side-menu">
+                  <li>
+                    <a href="{% url 'giao_vien:subject' %}">
+                      <i class="fa fa-book"></i> Quản lý môn </a>
+                  </li>
                   <li><a><i class="fa fa-question-circle-o"></i> Quản lý câu hỏi <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="form.html">Tạo câu hỏi</a></li>
-                      <li><a href="form_advanced.html">Câu hỏi đã tạo</a></li>
+                      <li><a href="{% url 'giao_vien:question' %}">Tạo câu hỏi</a></li>
+                      <li><a href="{% url 'giao_vien:question_list' %}">Câu hỏi đã tạo</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-table"></i> Quản lý đề <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="general_elements.html">Tự tạo đề</a></li>
-                      <li><a href="media_gallery.html">Tạo đề tự động</a></li>
-                      <li><a href="typography.html">Đề đã tạo</a></li>
+                       <li><a href="{% url 'giao_vien:exam_create_manual' %}">Tự tạo đề</a></li>
+                      <li><a href="{% url 'giao_vien:exam_create_auto' %}">Tạo đề tự động</a></li>
+                      <li><a href="{% url 'giao_vien:exam_list' %}">Đề đã tạo</a></li>
                     </ul>
                   </li>
                   <li>
-                    <a href="typography.html">
+                    <a href="{% url 'giao_vien:profile' %}">
                       <i class="fa fa-info-circle"></i> Thông tin cá nhân </a>
                   </li>
                 </ul>
@@ -93,7 +97,7 @@
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
-                    <li><a href="javascript:;"> Thông tin</a></li>
+                    <li><a href="{% url 'giao_vien:profile' %}"> Thông tin</a></li>
                     <li><a href="{% url 'chung:logout' %}"><i class="fa fa-sign-out pull-right"></i> Đăng xuất</a></li>
                   </ul>
                 </li>

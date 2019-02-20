@@ -272,17 +272,17 @@ def question_list_option(request, option):
     if option['tu_luan']:
         dang_cau_hoi.append(CauHoi.TL)
     if option['ky_hoc'] == 'GKI':
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
-                                           ky_hoc="Giữa kỳ I", dang__in=dang_cau_hoi)
+        ky_hoc = ["Giữa kì I", ]
     elif option['ky_hoc'] == "CKI":
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
-                                           ky_hoc__in=["Giữa kỳ I", "Cuối kỳ I"], dang__in=dang_cau_hoi)
+        ky_hoc = ["Giữa kì I", "Cuối kì I"]
     elif option['ky_hoc'] == "GKII":
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
-                                           ky_hoc="Giữa kỳ II", dang__in=dang_cau_hoi)
+        ky_hoc = ["Giữa kì II", ]
     else:
-        ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=option['mon'],
-                                           dang__in=dang_cau_hoi)
+        ky_hoc = ["Giữa kì I", "Cuối kì I", "Giữa kì II", "Cuối kì II"]
+    ds_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False,
+                                       mon_id=option['mon'],
+                                       ky_hoc__in=ky_hoc,
+                                       dang__in=dang_cau_hoi)
     for cau_hoi in ds_cau_hoi:
         data.append([cau_hoi.id, cau_hoi.chu_de.ten, cau_hoi.dang, cau_hoi.do_kho,
                      cau_hoi.giao_vien_tao.ho_ten, str(cau_hoi.thoi_gian_tao)[:-16]])
@@ -378,7 +378,7 @@ def question_detail_review(request, cau_truc):
     cau_truc = json.loads(cau_truc)
     chi_tiet = """"""
     if cau_truc['so_tn'] > 0:
-        diem_tn = round(cau_truc['pt_tn']/10/cau_truc['so_tn'], 2)
+        diem_tn = round(cau_truc['pt_tn']/cau_truc['so_tn'], 2)
         chi_tiet += "<b><u>Phần:</u> Trắc nhiệm</b><br>"
         for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Trắc nhiệm")):
             if cau_hoi.co_cau_hoi_nho:
@@ -469,7 +469,6 @@ def exam_create_auto(request):
     if request.method == 'POST':
         cau_truc = json.loads(request.POST['cau_truc'])
         chi_tiet_so_luong = json.loads(request.POST['chi_tiet_so_luong'])
-        print(request.POST)
         mon = Mon.objects.get(id=int(request.POST['mon']))
         if request.POST['ky_hoc'] == 'Giữa kì I':
             ky_hoc = ['Giữa kì I', ]
@@ -479,89 +478,243 @@ def exam_create_auto(request):
             ky_hoc = ['Giữa kì II', ]
         else:
             ky_hoc = ['Giữa kì I', 'Cuối kì I', "Giữa kì II", 'Cuối kì II']
+        chi_tiet = ""
+        dap_an_html = ""
         for dang, chi_tiet_chu_de in chi_tiet_so_luong.items():
+
             if dang == "Trắc nhiệm":
-                for chu_de, so_luong in chi_tiet_chu_de.items():
-                    print(chu_de, so_luong)
-                    ds_tn = []
-                    if chu_de == 'Tất cả':
-                        if 'r_tn_d' in so_luong.keys():
-                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
-                                                               la_cau_hoi_nho=False,
-                                                               ky_hoc__in=ky_hoc,
-                                                               dang="Trắc nhiệm",
-                                                               do_kho=CauHoi.DE)
-                            try:
-                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_d']))
-                            except ValueError:
-                                return JsonResponse({"status": "False", "messages": 'Không đủ câu hỏi trắc nhiệm dễ'})
-
-                        if 'r_tn_tb' in so_luong.keys():
-                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
-                                                               la_cau_hoi_nho=False,
-                                                               ky_hoc__in=ky_hoc,
-                                                               dang="Trắc nhiệm",
-                                                               do_kho=CauHoi.TRUNG_BINH)
-                            try:
-                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
-                            except ValueError:
-                                return JsonResponse({"status": "False",
-                                                     "messages": 'Không đủ câu hỏi trắc nhiệm trung bình'})
-
-                        if 'r_tn_k' in so_luong.keys():
-                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
-                                                               la_cau_hoi_nho=False,
-                                                               ky_hoc__in=ky_hoc,
-                                                               dang="Trắc nhiệm",
-                                                               do_kho=CauHoi.KHO)
-                            try:
-                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
-                            except ValueError:
-                                return JsonResponse({"status": "False",
-                                                     "messages": 'Không đủ câu hỏi trắc nhiệm khó'})
+                ds_tn = []
+                for ten_chu_de, so_luong in chi_tiet_chu_de.items():
+                    if ten_chu_de == 'Tất cả':
+                        ds_chu_de = mon.chu_de.all()
                     else:
-                        if 'r_tn_d' in so_luong.keys():
-                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
-                                                               la_cau_hoi_nho=False,
-                                                               ky_hoc__in=ky_hoc,
-                                                               dang="Trắc nhiệm",
-                                                               do_kho=CauHoi.DE,
-                                                               chu_de=ChuDe.objects.get(ten=chu_de))
-                            try:
-                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_d']))
-                            except ValueError:
-                                return JsonResponse({"status": "False", "messages": 'Không đủ câu hỏi trắc nhiệm dễ'})
+                        ds_chu_de = mon.chu_de.filter(ten=ten_chu_de)
+                    if 'r_tn_d' in so_luong.keys():
+                        ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                           la_cau_hoi_nho=False,
+                                                           ky_hoc__in=ky_hoc,
+                                                           dang="Trắc nhiệm",
+                                                           chu_de__in=ds_chu_de,
+                                                           do_kho=CauHoi.DE)
+                        try:
+                            ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_d']))
+                        except ValueError:
+                            return JsonResponse({"status": "False",
+                                                 "messages": 'Không đủ câu hỏi trắc nhiệm dễ trong ngân hàng'})
 
-                        if 'r_tn_tb' in so_luong.keys():
-                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
-                                                               la_cau_hoi_nho=False,
-                                                               ky_hoc__in=ky_hoc,
-                                                               dang="Trắc nhiệm",
-                                                               do_kho=CauHoi.TRUNG_BINH,
-                                                               chu_de=ChuDe.objects.get(ten=chu_de))
-                            try:
-                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
-                            except ValueError:
-                                return JsonResponse({"status": "False",
-                                                     "messages": 'Không đủ câu hỏi trắc nhiệm trung bình'})
+                    if 'r_tn_tb' in so_luong.keys():
+                        ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                           la_cau_hoi_nho=False,
+                                                           ky_hoc__in=ky_hoc,
+                                                           dang="Trắc nhiệm",
+                                                           chu_de__in=ds_chu_de,
+                                                           do_kho=CauHoi.TRUNG_BINH)
+                        try:
+                            ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
+                        except ValueError:
+                            return JsonResponse({"status": "False",
+                                                 "messages": 'Không đủ câu hỏi trắc nhiệm trung bình trong ngân hàng'})
 
-                        if 'r_tn_k' in so_luong.keys():
-                            ds_cau_hoi = CauHoi.objects.filter(mon=mon,
-                                                               la_cau_hoi_nho=False,
-                                                               ky_hoc__in=ky_hoc,
-                                                               dang="Trắc nhiệm",
-                                                               do_kho=CauHoi.KHO,
-                                                               chu_de=ChuDe.objects.get(ten=chu_de))
-                            try:
-                                ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
-                            except ValueError:
-                                return JsonResponse({"status": "False",
-                                                     "messages": 'Không đủ câu hỏi trắc nhiệm khó'})
-                    print(ds_tn)
+                    if 'r_tn_k' in so_luong.keys():
+                        ds_cau_hoi = CauHoi.objects.filter(mon=mon,
+                                                           la_cau_hoi_nho=False,
+                                                           ky_hoc__in=ky_hoc,
+                                                           dang="Trắc nhiệm",
+                                                           chu_de__in=ds_chu_de,
+                                                           do_kho=CauHoi.KHO)
+                        try:
+                            ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
+                        except ValueError:
+                            return JsonResponse({"status": "False",
+                                                 "messages": 'Không đủ câu hỏi trắc nhiệm khó trong ngân hàng'})
+                so_luong_tn = len(ds_tn)
+                diem = round(cau_truc['r_pt_tn'] / so_luong_tn, 2)
+                chi_tiet += "<b><u>Phần:</u> Trắc nhiệm</b><br>"
+                dap_an_html = "<b><u>Phần:</u> Trắc nhiệm</b><br>"
+                for index, cau_hoi in enumerate(ds_tn):
+                    if cau_hoi.co_cau_hoi_nho:
+                        ds_cau_hoi_nho = cau_hoi.cau_hoi_nho.all()
+
+                        diem_con = round(diem / len(ds_cau_hoi_nho), 2)
+                        chi_tiet += """
+                            <b>Câu {index} </b>({diem} điểm)
+                            {cau_hoi.noi_dung}
+                            <ol type='a'>
+                        """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem)
+                        dap_an_html += """
+                            <p><b>Câu {}:</b> 
+                            <ol type='a'>
+                        """.format(index + 1)
+                        for ch in ds_cau_hoi_nho:
+                            chi_tiet += "<li><div>({diem} điểm){}<ol type='A'>".format(ch.noi_dung, diem=diem_con)
+                            dap_an_html += "<li>"
+                            for k, da in enumerate(ch.dap_an.all()):
+                                chi_tiet += """
+                                <li><div>{da.noi_dung}</div></li>
+                                """.format(da=da)
+                                if da.dung:
+                                    dap_an_html += """
+                                     {s}</p>{da.noi_dung}</li>
+                                    """.format(s=chr(ord(str(k)) + 17), da=da)
+                            chi_tiet += "</ol></div></li>"
+                        chi_tiet += "</ol>"
+                    else:
+                        chi_tiet += """
+                            <b>Câu {index} </b>({diem} điểm)
+                            {cau_hoi.noi_dung}
+                            <ol type='A'>
+                        """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem)
+                        dap_an_html += """
+                            <p><b>Câu {}:</b> 
+                        """.format(index + 1)
+                        for k, da in enumerate(cau_hoi.dap_an.all()):
+                            chi_tiet += """
+                            <li><div>{da.noi_dung}</div></li>
+                            """.format(da=da)
+                            if da.dung:
+                                dap_an_html += """
+                                 {s}</p>{da.noi_dung}
+                                """.format(s=chr(ord(str(k)) + 17), da=da)
+                        chi_tiet += "</ol>"
+
             elif dang == "Điền từ":
-                pass
+                ds_dt = []
+                for i in range(0, len(chi_tiet_chu_de['Chủ đề'])):
+                    if chi_tiet_chu_de['Chủ đề'][i] == 'Tất cả':
+                        ds_chu_de = mon.chu_de.all()
+                    else:
+                        ds_chu_de = mon.chu_de.filter(ten=chi_tiet_chu_de['Chủ đề'][i])
+                    ds_ch_dt = CauHoi.objects.filter(mon=mon,
+                                                     la_cau_hoi_nho=False,
+                                                     ky_hoc__in=ky_hoc,
+                                                     dang="Điền từ",
+                                                     chu_de__in=ds_chu_de,
+                                                     do_kho=chi_tiet_chu_de['Độ khó'][i],
+                                                     so_diem=chi_tiet_chu_de['Điểm'][i])
+                    cau_hoi = random.choice(ds_ch_dt)
+                    count = 1
+                    while count < 10 and cau_hoi in ds_dt:
+                        cau_hoi = random.choice(ds_ch_dt)
+                        count += 1
+                    if cau_hoi in ds_dt:
+                        return JsonResponse({"status": "False",
+                                             "messages": 'Không đủ câu hỏi điền từ trong ngân hàng'})
+                    ds_dt.append(cau_hoi)
+
+                chi_tiet += "<b><u>Phần:</u> Điền từ</u></b><br>"
+                dap_an_html += "<b><u>Phần:</u> Điền từ</u></b><br>"
+                for index, cau_hoi in enumerate(ds_dt):
+                    chi_tiet += """
+                        <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                        {cau_hoi.noi_dung}
+                    """.format(cau_hoi=cau_hoi, index=index + 1)
+                    dap_an_html += "<p><b>Câu {}:</b></p><ol type='a'>".format(index + 1)
+                    for da in cau_hoi.dap_an.all():
+                        dap_an_html += """
+                        <li>{da.noi_dung}</li>
+                        """.format(da=da)
+                    dap_an_html += "</ol>"
             else:
-                pass
+                ds_tl = []
+                for i in range(0, len(chi_tiet_chu_de['Chủ đề'])):
+                    if chi_tiet_chu_de['Chủ đề'][i] == 'Tất cả':
+                        ds_chu_de = mon.chu_de.all()
+                    else:
+                        ds_chu_de = mon.chu_de.filter(ten=chi_tiet_chu_de['Chủ đề'][i])
+                    ds_ch_tl = CauHoi.objects.filter(mon=mon,
+                                                     la_cau_hoi_nho=False,
+                                                     ky_hoc__in=ky_hoc,
+                                                     dang="Tự luận",
+                                                     chu_de__in=ds_chu_de,
+                                                     do_kho=chi_tiet_chu_de['Độ khó'][i],
+                                                     so_diem=chi_tiet_chu_de['Điểm'][i])
+                    cau_hoi = random.choice(ds_ch_tl)
+                    count = 1
+                    while count < 10 and cau_hoi in ds_tl:
+                        cau_hoi = random.choice(ds_ch_tl)
+                        count += 1
+                    if cau_hoi in ds_tl:
+                        return JsonResponse({"status": "False",
+                                             "messages": 'Không đủ câu hỏi tự luận trong ngân hàng'})
+                    ds_tl.append(cau_hoi)
+
+                chi_tiet += "<b><u>Phần:</u> Tự luận</u></b><br>"
+                for index, cau_hoi in enumerate(ds_tl):
+                    if cau_hoi.co_cau_hoi_nho:
+                        chi_tiet += """
+                                    <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                                    {cau_hoi.noi_dung}
+                                    <ol type='a'>
+                                """.format(cau_hoi=cau_hoi, index=index + 1)
+                        for ch in cau_hoi.cau_hoi_nho.all():
+                            chi_tiet += "<li>{}</li>".format(ch.noi_dung)
+                        chi_tiet += "</ol>"
+                    else:
+                        chi_tiet += """
+                                    <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                                    {cau_hoi.noi_dung}
+                                """.format(cau_hoi=cau_hoi, index=index + 1)
+
+        cau_hoi_html = """
+        <div class="row" id="tieude" style="text-align:center">
+                <div class="col-md-4">
+                    <h5><b>{user.truong.ten}</b></h5>
+                </div>
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-6">
+                    <h5><b id="exam_name">Khảo sát chất lượng {ky_hoc}</b></h5>
+                    <h5><b id="exam_year">Năm học {nam_hoc}</b></h5>
+                    <b id="exam_subject">Môn : {mon.ten_dai} </b><i id="exam_time">(Thời gian làm bài {thoi_gian})
+                    </i>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-7">
+                    <p>Họ tên học sinh: ............................................................................
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <p>Lớp:............</p>
+                </div>
+            </div>
+            <div class="row">
+                <table class="exam_table">
+                    <tr>
+                        <td width="40%">Chữ kí của giám thị 1</td>
+                        <td width="40%">Chữ kí của giám thị 2</td>
+                        <td width="20%">Số Phách</td>
+                    </tr>
+                </table>
+                <table class="exam_table">
+                    <tr>
+                        <td width="20%">Điểm bằng số</td>
+                        <td width="20%">Điểm bằng chữ</td>
+                        <td width="40%">Chữ kí của giáo viên</td>
+                        <td width="20%">Số Phách</td>
+                    </tr>
+                </table>
+                <div>
+                    <b style="float: left;"><u>Đề bài</u></b>
+                </div>
+            </div>
+            <div id="3_con" class="exam_body">
+                {chi_tiet}
+            </div>
+        """.format(user=request.user,
+                   ky_hoc=request.POST['ky_hoc'].lower(),
+                   nam_hoc=request.POST['nam_hoc'],
+                   mon=mon,
+                   thoi_gian=request.POST['thoi_gian'],
+                   chi_tiet=chi_tiet)
+        De.objects.create(mon=mon,
+                          thoi_gian=request.POST['thoi_gian'],
+                          giao_vien_tao=request.user,
+                          ky_hoc=request.POST['ky_hoc'],
+                          cau_hoi_html=cau_hoi_html,
+                          dap_an_html=dap_an_html)
         return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
     now = datetime.datetime.now()
     if now.month < 7:
@@ -636,3 +789,10 @@ def profile(request):
 
 
 
+# for kh in ky_hoc:
+# ...     for d in diem:
+# ...             for dk in do_kho:
+# ...                     for cd in chu_de:
+# ...                             for i in range(1,6):
+# ...                                     CauHoi.objects.create(giao_vien_tao=giao_vien, mon=mon, noi_dung="<p>{}{}{}{}{}</p>".format(i,cd.ten,dk,d,kh), do_kho=dk, chu_de=cd, ky_hoc=kh, dang="Tự luận", the_loai="Văn bản", so_diem=d)
+# ...

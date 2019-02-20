@@ -27,7 +27,7 @@
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
-            <form method="post">
+            <form>
               <h1>Smart Class</h1>
               {% csrf_token %}
               <div>
@@ -37,7 +37,7 @@
                 <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required="" />
               </div>
               <div>
-                <button class="btn btn-success submit form-control" >Đăng nhập</button>
+                <button class="btn btn-success submit form-control" id="login">Đăng nhập</button>
               </div>
               <div class="clearfix"></div>
             </form>
@@ -46,5 +46,8 @@
 
       </div>
     </div>
+    <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'custom/js/chung/login.js' %}"></script>
   </body>
 </html>

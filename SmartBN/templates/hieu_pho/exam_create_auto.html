@@ -48,10 +48,10 @@
                             </div>
                             <div class="col-md-10">
                                 <select class="form-control" id="ky_hoc">
-                                    <option value="GKI" data-show="giữa kỳ I">Giữa kỳ I</option>
-                                    <option value="CKI" data-show="cuối kỳ I">Cuối kỳ I</option>
-                                    <option value="GKII" data-show="giữa kỳ II">Giữa kỳ II</option>
-                                    <option value="CKII" data-show="cuối năm">Cuối kỳ II</option>
+                                    <option value="GKI" data-show="giữa kì I">Giữa kì I</option>
+                                    <option value="CKI" data-show="cuối kì I">Cuối kì I</option>
+                                    <option value="GKII" data-show="giữa kì II">Giữa kì II</option>
+                                    <option value="CKII" data-show="cuối năm">Cuối kì II</option>
                                 </select>
                             </div>
                         </div>
@@ -124,11 +124,11 @@
                             <div class="row exam_option_row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-3" >
-                                    <h5><b>Phần trăm điểm</b></h5>
+                                    <h5><b>Tổng điểm</b></h5>
                                 </div>
                                 <div class="col-md-7">
                                     <td>
-                                        <input type="number" class="form-control r_trac_nhiem r_phan_tram" min=0 max=100 name="r_pt_tn" value="0">
+                                        <input type="number" class="form-control r_trac_nhiem r_phan_tram" min=0 max=10 name="r_pt_tn" value="0">
                                     </td>
                                 </div>
                                 <div class="col-md-1"></div>
@@ -155,24 +155,23 @@
                             <div class="row exam_option_row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-3" >
-                                    <h5><b>Chủ đề</b></h5>
+                                    <h5><b>Tổng điểm</b></h5>
                                 </div>
                                 <div class="col-md-7">
-                                    <input class="form-control" type="text" id="search_chu_de_dt" name="search" placeholder="Chọn chủ đề" list="ds_chu_de_dt">
-                                    <datalist id="ds_chu_de_dt">
-
-                                    </datalist>
+                                    <td>
+                                        <input type="number" class="form-control r_dien_tu r_phan_tram" min=0 max=10 name="r_pt_dt" value="0">
+                                    </td>
                                 </div>
                                 <div class="col-md-1"></div>
                             </div>
                             <div class="row exam_option_row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-3" >
-                                    <h5><b>Phần trăm điểm</b></h5>
+                                    <h5><b>Số câu</b></h5>
                                 </div>
                                 <div class="col-md-7">
                                     <td>
-                                        <input type="number" class="form-control r_trac_nhiem r_phan_tram" min=0 max=100 name="r_pt_dt" value="0">
+                                        <input type="number" class="form-control" min=0 max=100 value="0" id="so_luong_dt" step="1">
                                     </td>
                                 </div>
                                 <div class="col-md-1"></div>
@@ -180,10 +179,10 @@
                             <div class="row exam_option_row">
                                 <table style="width: 100%;"  class="mytable" id="table_dt">
                                     <tr class="mytable">
+                                        <td width="20%"><b>Câu</b></td>
                                         <td width="40%"><b>Chủ đề</b></td>
-                                        <td width="20%"><b>Số câu dễ</b></td>
-                                        <td width="20%"><b>Số câu trung bình</b></td>
-                                        <td width="20%"><b>Số câu khó</b></td>
+                                        <td width="20%"><b>Độ khó</b></td>
+                                        <td width="20%"><b>Điểm</b></td>
                                     </tr>
                                 </table>
                             </div>
@@ -199,24 +198,23 @@
                             <div class="row exam_option_row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-3" >
-                                    <h5><b>Chủ đề</b></h5>
+                                    <h5><b>Tổng điểm</b></h5>
                                 </div>
                                 <div class="col-md-7">
-                                    <input class="form-control" type="text" id="search_chu_de_tl" name="search" placeholder="Chọn chủ đề" list="ds_chu_de_tl">
-                                    <datalist id="ds_chu_de_tl">
-
-                                    </datalist>
+                                    <td>
+                                        <input type="number" class="form-control r_tu_luan r_phan_tram" min=0 max=10 name="r_pt_tl" value="0">
+                                    </td>
                                 </div>
                                 <div class="col-md-1"></div>
                             </div>
                             <div class="row exam_option_row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-3" >
-                                    <h5><b>Phần trăm điểm</b></h5>
+                                    <h5><b>Số câu</b></h5>
                                 </div>
                                 <div class="col-md-7">
                                     <td>
-                                        <input type="number" class="form-control r_trac_nhiem r_phan_tram" min=0 max=100 name="r_pt_tl" value="0">
+                                        <input type="number" class="form-control" min=0 max=100 value="0" id="so_luong_tl" step="1">
                                     </td>
                                 </div>
                                 <div class="col-md-1"></div>
@@ -224,10 +222,10 @@
                             <div class="row exam_option_row">
                                 <table style="width: 100%;"  class="mytable" id="table_tl">
                                     <tr class="mytable">
+                                        <td width="20%"><b>Câu</b></td>
                                         <td width="40%"><b>Chủ đề</b></td>
-                                        <td width="20%"><b>Số câu dễ</b></td>
-                                        <td width="20%"><b>Số câu trung bình</b></td>
-                                        <td width="20%"><b>Số câu khó</b></td>
+                                        <td width="20%"><b>Độ khó</b></td>
+                                        <td width="20%"><b>Điểm</b></td>
                                     </tr>
                                 </table>
                             </div>
@@ -253,9 +251,9 @@
 <script>
     var mon = {};
     {% for mon in list_mon %}
-        mon['{{mon.ten_dai}}'] = '<option value="Tất cả" data-id="0" class="chon_chu_de">';
+        mon['{{mon.ten_dai}}'] = '<option value="Tất cả" data-id="0" class="chon_chu_de">Tất cả</option>';
         {% for chu_de in mon.chu_de.all %}
-            mon['{{mon.ten_dai}}'] += '<option value="{{chu_de.ten}}" data-id="{{chu_de.id}}" class="chon_chu_de">'
+            mon['{{mon.ten_dai}}'] += '<option value="{{chu_de.ten}}" data-id="{{chu_de.id}}" class="chon_chu_de">{{chu_de.ten}}</option>'
         {% endfor %}
     {% endfor %}
 </script>

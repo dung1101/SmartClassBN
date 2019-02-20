@@ -10,13 +10,11 @@ $(document).ready(function(){
             $(this).remove();
         })
 
-        $("#ds_chu_de_dt").html(mon[$("#r_gv_mon option:selected").text()]);
-        $("#table_dt .table_data").each(function(){
+        $("#table_dt .cau_hoi_da_chon").each(function(){
             $(this).remove();
         })
 
-        $("#ds_chu_de_tl").html(mon[$("#r_gv_mon option:selected").text()]);
-        $("#table_tl .table_data").each(function(){
+        $("#table_tl .cau_hoi_da_chon").each(function(){
             $(this).remove();
         })
     });
@@ -29,7 +27,24 @@ $(document).ready(function(){
           }).length) {
               //this của input
               var check = true;
+              if((val=="Tất cả")&&($(".chu_de_tn_da_chon").length>0)){
+                    check = false;
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Lỗi',
+                        text: 'Chọn chủ đề tất cả thì không thể chọn thêm chủ đề',
+                    });
+              }
               $(".chu_de_tn_da_chon").each(function(){
+                    if($(this).data("val")=="Tất cả"){
+                        check = false;
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Lỗi',
+                            text: 'Chọn chủ đề tất cả thì không thể chọn thêm chủ đề',
+                        });
+                        return false;
+                    }
                     if($(this).data("val") == val){
                         check = false;
                         Swal.fire({
@@ -71,7 +86,24 @@ $(document).ready(function(){
           }).length) {
               //this của input
               var check = true;
+              if((val=="Tất cả")&&($(".chu_de_dt_da_chon").length>0)){
+                    check = false;
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Lỗi',
+                        text: 'Chọn chủ đề tất cả thì không thể chọn thêm chủ đề',
+                    });
+              }
               $(".chu_de_dt_da_chon").each(function(){
+                    if($(this).data("val")=="Tất cả"){
+                        check = false;
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Lỗi',
+                            text: 'Chọn chủ đề tất cả thì không thể chọn thêm chủ đề',
+                        });
+                        return false;
+                    }
                     if($(this).data("val") == val){
                         check = false;
                         Swal.fire({
@@ -105,47 +137,83 @@ $(document).ready(function(){
           }
     });
 
+    //
+    $("#so_luong_dt").on('change', function(){
+        var sl = parseInt($(this).val());
+        if(sl < 0){
+            Swal.fire({
+                type: "warning",
+                title: "Cảnh báo",
+                text: "Số lượng câu hỏi phải >= 1"
+            })
+            $(this).val(1);
+            sl = 1;
+        }
+        var chu_de = mon[$("#r_gv_mon option:selected").text()];
+        $("#table_dt .cau_hoi_da_chon").remove();
+        for(let i=1;i<sl+1;i++){
+            var html = `
+            <tr class="cau_hoi_da_chon">
+                <td>${i}</td>
+                <td>
+                    <select class="form-control chu_de_dt_chon">
+                        ${chu_de}
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control do_kho_dt_chon">
+                        <option>Dễ</option>
+                        <option>Trung bình</option>
+                        <option>Khó</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="form-control diem_dt_chon" value="1" min="0.25" max="10" step="0.25">
+                </td>
+            </tr>
+            `
+            $("#table_dt").append(html);
+        }
+    })
+
     // chọn chủ đề cho tự luận
-    $("#search_chu_de_tl").on('input', function () {
-          var val = this.value; // this của input
-          if($('#ds_chu_de_tl option').filter(function(){
-              return this.value.toUpperCase() === val.toUpperCase(); //this của option
-          }).length) {
-              //this của input
-              var check = true;
-              $(".chu_de_tl_da_chon").each(function(){
-                    if($(this).data("val") == val){
-                        check = false;
-                        Swal.fire({
-                            type: 'error',
-                            title: 'Lỗi',
-                            text: 'Chủ đề đã chọn',
-                        });
-                        return false;
-                    }
-              })
-              if(check){
-                let html = `
-                  <tr class='table_data'>
-                    <td>
-                        <p class="chu_de_tl_da_chon" data-val="${this.value}"><button class="btn btn-rounded btn-xs btn-danger xoa_chu_de">X</button>${this.value}</p>
-                    </td>
-                    <td>
-                        <input type="number" class="form-control r_tu_luan r_so_luong" min=0 max=100 name="r_tl_d" value="0" data-chu_de='${this.value}' data-the_loai="r_pt_tl">
-                    </td>
-                    <td>
-                        <input type="number" class="form-control r_tu_luan r_so_luong" min=0 max=100 name="r_tl_tb" value="0" data-chu_de='${this.value}' data-the_loai="r_pt_tl">
-                    </td>
-                    <td>
-                        <input type="number" class="form-control r_tu_luan r_so_luong" min=0 max=100 name="r_tl_k" value="0" data-chu_de='${this.value}' data-the_loai="r_pt_tl">
-                    </td>
-                  </tr>
-                  `
-                  $("#table_tl").append(html);
-              }
-              this.value = "";
-          }
-    });
+    $("#so_luong_tl").on('change', function(){
+        var sl = parseInt($(this).val());
+        if(sl < 0){
+            Swal.fire({
+                type: "warning",
+                title: "Cảnh báo",
+                text: "Số lượng câu hỏi phải >= 1"
+            })
+            $(this).val(1);
+            sl = 1;
+        }
+        var chu_de = mon[$("#r_gv_mon option:selected").text()];
+        $("#table_tl .cau_hoi_da_chon").remove();
+        for(let i=1;i<sl+1;i++){
+            var html = `
+            <tr class="cau_hoi_da_chon">
+                <td>${i}</td>
+                <td>
+                    <select class="form-control chu_de_tl_chon">
+                        ${chu_de}
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control do_kho_tl_chon">
+                        <option>Dễ</option>
+                        <option>Trung bình</option>
+                        <option>Khó</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="form-control diem_tl_chon" value="1" min="0.25" max="10" step="0.25">
+                </td>
+            </tr>
+            `
+            $("#table_tl").append(html);
+        }
+    })
 
     // xóa chủ đề
     $("#tab_content2").on('click', '.xoa_chu_de', function(){
@@ -171,11 +239,11 @@ $(document).ready(function(){
             }
         });
 
-        if (pham_tram != 100) {
+        if (pham_tram != 10) {
             Swal.fire({
                 type: 'error',
                 title: 'Lỗi',
-                text: 'Tổng phần trăm điểm số phải đủ 100%'
+                text: 'Tổng điểm phải đủ 10'
             })
             return false;
         }
@@ -197,22 +265,71 @@ $(document).ready(function(){
         }
 
         if(cau_truc['r_pt_dt'] > 0){
-            $("#table_dt .r_so_luong").each(function(){
-                if(typeof(so_dien_tu[$(this).data('chu_de')]) == 'undefined'){
-                    so_dien_tu[$(this).data('chu_de')] = {};
-                }
-                so_dien_tu[$(this).data('chu_de')][$(this).attr("name")] = parseInt($(this).val());
+            if($("#so_luong_dt").val() <=0){
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: 'Chưa chọn số lượng câu hỏi điền từ'
+                })
+                return false;
+            }
+            so_dien_tu['Chủ đề'] = [];
+            $("#table_dt .chu_de_dt_chon").each(function(){
+                so_dien_tu["Chủ đề"].push($(this).find("option:selected").first().val());
             })
+            so_dien_tu['Độ khó'] = [];
+            $("#table_dt .do_kho_dt_chon").each(function(){
+                so_dien_tu["Độ khó"].push($(this).find("option:selected").first().val());
+            })
+            so_dien_tu['Điểm'] = [];
+            let diem = 0;
+            $("#table_dt .diem_dt_chon").each(function(){
+                so_dien_tu["Điểm"].push(parseFloat($(this).val()));
+                diem += parseFloat($(this).val());
+            })
+            if(diem != cau_truc['r_pt_dt']){
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: 'Số điểm điền từ không bẳng số quy định'
+                })
+                return false;
+            }
             chi_tiet_so_luong['Điền từ'] = so_dien_tu;
         }
 
         if(cau_truc['r_pt_tl'] > 0){
-            $("#table_tl .r_so_luong").each(function(){
-                if(typeof(so_tu_luan[$(this).data('chu_de')]) == 'undefined'){
-                    so_tu_luan[$(this).data('chu_de')] = {};
-                }
-                so_tu_luan[$(this).data('chu_de')][$(this).attr("name")] = parseInt($(this).val());
+            if($("#so_luong_tl").val() <=0){
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: 'Chưa chọn số lượng câu hỏi tự luận'
+                })
+                return false;
+            }
+            so_tu_luan['Chủ đề'] = [];
+            $("#table_tl .chu_de_tl_chon").each(function(){
+                so_tu_luan["Chủ đề"].push($(this).find("option:selected").first().val());
             })
+            so_tu_luan['Độ khó'] = [];
+            $("#table_tl .do_kho_tl_chon").each(function(){
+                so_tu_luan["Độ khó"].push($(this).find("option:selected").first().val());
+            })
+            so_tu_luan['Điểm'] = [];
+            let diem = 0;
+            $("#table_tl .diem_tl_chon").each(function(){
+                so_tu_luan["Điểm"].push(parseFloat($(this).val()));
+                diem += parseFloat($(this).val());
+            })
+            console.log(diem, cau_truc['r_pt_tl']);
+            if(diem != cau_truc['r_pt_tl']){
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: 'Số điểm tự luận không bẳng số quy định'
+                })
+                return false;
+            }
             chi_tiet_so_luong['Tự luận'] = so_tu_luan;
         }
         $.ajax({
@@ -224,9 +341,10 @@ $(document).ready(function(){
                 'mon': $('#r_gv_mon option:selected').val(),
                 'cau_truc': JSON.stringify(cau_truc),
                 'chi_tiet_so_luong': JSON.stringify(chi_tiet_so_luong),
-                'thoi_gian': $('input[name=r_thoi_gian]').val(),
+                'thoi_gian': $('#r_thoi_gian option:selected').text(),
                 'ky_hoc': $("#ky_hoc option:selected").text(),
-                'so_de': $("#so_de").val()
+                'so_de': $("#so_de").val(),
+                'nam_hoc': $("#year_0").val() + " - " + $("#year_1").val()
             },
             success: function (msg, status, jqXHR) {
                 if(msg.status == 'False'){

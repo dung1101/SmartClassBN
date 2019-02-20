@@ -223,7 +223,7 @@ $(document).ready(function(){
         }
         else if(dang_cau_hoi.includes("Điền từ")){
             let phan_tram = $("input[name='pt_dt']").val();
-            let max = phan_tram / 10;
+            let max = phan_tram;
             let diem = parseInt(so_diem_tl) + parseInt(so_diem);
             if ( diem > max){
                 Swal.fire({
@@ -247,7 +247,7 @@ $(document).ready(function(){
         }
         else if(dang_cau_hoi.includes("Tự luận")){
             let phan_tram = $("input[name='pt_tl']").val();
-            let max = phan_tram / 10;
+            let max = phan_tram;
             let diem = parseInt(so_diem_tl) + parseInt(so_diem);
             if (diem > max){
                 Swal.fire({
@@ -348,33 +348,61 @@ $(document).ready(function(){
             }
 
             if (chon_tn < max_tn){
-                alert("Chưa đủ số lượng câu hỏi trắc nhiệm");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Chưa đủ số lượng câu hỏi trắc nhiệm",
+                });
                 return false;
             }
             else if (chon_tn > max_tn){
-                alert("Quá số lượng câu hỏi trắc nhiệm");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Quá số lượng câu hỏi trắc nhiệm",
+                });
                 return false;
             }
             if (chon_dt < max_dt){
-                alert("Chưa đủ số lượng câu hỏi điền từ");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Chưa đủ số lượng câu hỏi điền từ",
+                });
                 return false;
             }
             else if (chon_dt > max_dt){
-                alert("Quá số lượng câu hỏi điền từ");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Quá số lượng câu hỏi điền từ",
+                });
                 return false;
             }
             if (chon_tl < max_tl){
-                alert("Chưa đủ số lượng câu hỏi tự luận");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Chưa đủ số lượng câu hỏi tự luận",
+                });
                 return false;
             }
             else if (chon_tl > max_tl){
-                alert("Quá số lượng câu hỏi tự luận");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Quá số lượng câu hỏi tự luận",
+                });
                 return false;
             }
             var token = $("input[name=csrfmiddlewaretoken]").val();
             var ten_de = $('input[name=ten_de]').val();
             if(ten_de == ''){
-                alert("Chưa đặt tên");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Chưa đặt tên",
+                });
                 return false;
             }
             var mon = $('#gv_mon option:selected').val();
@@ -389,12 +417,20 @@ $(document).ready(function(){
                     cau_truc[$(this).attr('name')] = (-1);
                 }
             });
-            if(pham_tram != 100){
-                alert("Tổng phần trăm điểm số phải đủ 100%");
+            if(pham_tram != 10){
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Tổng điểm phải đủ 10",
+                });
                 return false;
             }
             if(jQuery.inArray(0, cau_truc) != -1){
-                alert("Chưa chọn phần trăm điểm số");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Chưa chọn điểm số",
+                });
                 return false;
             }
             var so_luong = 0;
@@ -409,30 +445,20 @@ $(document).ready(function(){
                 }
             });
             if(jQuery.inArray(0, chi_tiet_so_luong) != -1){
-                alert("Chưa chọn số lượng câu hỏi");
+                Swal.fire({
+                    type: 'error',
+                    title: 'Lỗi',
+                    text: "Chưa chọn số lượng câu hỏi",
+                });
                 return false;
             }
             var list_ques = [];
             $('#list_ques_selected tbody tr').each(function(){
                 list_ques.push($(this).find('p').first().attr('id').split('_')[1]+'_'+$(this).find('input[name=don]').first().val());
             });
-            $("#processing").modal({backdrop: 'static', keyboard: false});
             var btn = $(this)
             btn.prop('disabled', true);
             $.ajax({
-                xhr: function() {
-                    var xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener("progress", function(event){
-                        var percent = Math.round((event.loaded / event.total) * 100) + '%';
-                        $("#progressBar").attr("style","width:"+percent);
-                        $("#progressBar").text(percent);
-                    }, false);
-                    $("#cancel_upload").click(function(){
-                        xhr.abort();
-                    });
-                    btn.prop('disabled', false);
-                    return xhr;
-                  },
                  type:'POST',
                  url:location.href,
                  data:{
@@ -442,10 +468,26 @@ $(document).ready(function(){
                     'ky_hoc': $("#ky_hoc option:selected").text(),
                     'de': $("#step-3").html(),
                  },
-                 success: function(){
-                    $("#processing").modal('hide');
-                    location.reload();
-                    btn.prop('disabled', false);
+                 success: function(msg, status, jqXHR){
+                    if(msg.status == 'False'){
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Lỗi',
+                            text: msg.messages,
+                        });
+                    }
+                    else{
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Thành công',
+                            text: msg.messages,
+                            showConfirmButton: false,
+                            timer: 1000
+                        }).then((msg) => {
+                            location.reload();
+                            btn.prop('disabled', false);
+                        });
+                    };
                  },
             });
         });
@@ -456,7 +498,6 @@ $(document).ready(function(){
                         so_tn: max_tn,
                         so_dt: max_dt,
                         so_tl: max_tl,
-
                     }
                     $(".phan_tram").each(function(){
                         if(typeof($(this).attr("disabled")) == 'undefined'){
