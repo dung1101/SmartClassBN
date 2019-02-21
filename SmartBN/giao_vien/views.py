@@ -156,7 +156,7 @@ def question(request):
 
         if request.FILES.get('dinh_kem') is not None:
             ch.dinh_kem = request.FILES['dinh_kem']
-            handle_uploaded_file(request.FILES['dinh_kem'])
+            # handle_uploaded_file(request.FILES['dinh_kem'])
         ch.save()
         return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
     content = {
