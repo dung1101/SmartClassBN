@@ -3,7 +3,6 @@ $(document).ready(function(){
         var username = $('input[name=username]').val();
         var password = $('input[name=password]').val();
 
-        alert(username, password);
         if(username == ""){
             Swal.fire({
                 type: 'error',
@@ -22,36 +21,42 @@ $(document).ready(function(){
             return false;
         }
 
-        var posting = $.post(window.location.href, {
-            username: username,
-            password: password,
-            csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+        $.ajax({
+            type:"POST",
+            url: location.href,
+            data: $('#login_form').serialize(),
+            success: function(data){
+                var result = JSON.parse(JSON.stringify(data));
+                if(result.status == 'False'){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Lỗi',
+                        text: result.messages,
+                    });
+                }
+                else{
+                    Swal.fire({
+                        type: 'success',
+                        title: 'Thành công',
+                        text: 'Đăng nhập thành công',
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then(() =>{
+                        location.replace(result.messages)
+                    })
+                };
+             }
         });
-
-        posting.done(function( data ) {
-            var result = JSON.parse(JSON.stringify(data));
-
-            if(result.status == 'False'){
-                Swal.fire({
-                    type: 'error',
-                    title: 'Lỗi',
-                    text: result.messages,
-                });
-            }
-            else{
-                Swal.fire({
-                    type: 'success',
-                    title: 'Thành công',
-                    text: 'Đăng nhập thành công',
-                    showConfirmButton: false,
-                    timer: 1000
-                })
-            };
-        });
-
 
     });
 
+});
+
+document.addEventListener('keypress', function (e) {
+    var key = e.which || e.keyCode;
+    if (key === 13 && !$("body").attr("class").includes("swal")) { // 13 is enter
+      $("#login").click();
+    }
 });
 
 

@@ -1,0 +1,55 @@
+{% extends 'giao_vien/base.html' %}
+
+{% load static %}
+
+
+{% block title %}{% endblock %}
+
+{% block css %}
+<link href="{% static 'datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<div class="">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+            <h2>Danh sách môn  </h2>
+
+          <div class="clearfix"></div>
+        </div>
+
+        <div class="x_content">
+
+          <div class="table-responsive">
+            <table class="table table-striped jambo_table bulk_action" id="list_mon" width="100%">
+                <thead>
+                  <tr>
+                    <th>Tên môn</th>
+                    <th>Khối</th>
+                      <th>Tùy chọn</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<script src="{% static 'custom/js/giao_vien/subject.js' %}"></script>
+{% endblock %}

@@ -11,11 +11,6 @@ urlpatterns = [
         path('_detail_<int:id>', views.subject_detail, name='subject_detail'),
     ])),
 
-    path('teacher', include([
-        path('', views.teacher, name='teacher'),
-        path('_list', views.teacher_list, name='teacher_list'),
-    ])),
-
     path('question', include([
         path('', views.question, name='question'),
         path('_detail_<int:id>', views.question_detail_data, name='question_detail_data'),

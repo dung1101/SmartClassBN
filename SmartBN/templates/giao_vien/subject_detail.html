@@ -1,0 +1,102 @@
+{% extends 'giao_vien/base.html' %}
+
+{% load static %}
+
+
+{% block title %}{% endblock %}
+
+{% block css %}
+<!--<link href="{% static 'datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">-->
+{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<div class="">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+            <h2>{{ mon.ten_dai }} </h2>
+            <!--<button class="btn btn btn-round btn-primary"  style="float:right;" data-toggle="modal" data-target="#new_mon_multi" data-title="new">-->
+                <!--<i class="fa fa-plus"></i> Thêm nhiều môn-->
+            <!--</button>-->
+            <button class="btn btn-round btn-primary"  style="float:right;" data-toggle="modal" data-target="#new_chu_de" data-title="new">
+                <i class="fa fa-plus"></i> Tạo mới chủ đề
+            </button>
+          <div class="clearfix"></div>
+        </div>
+
+        <div class="x_content">
+
+          <div class="table-responsive">
+            <table class="table table-striped jambo_table bulk_action" id="list_chu_de" width="100%">
+                <thead>
+                  <tr>
+                    <td style="width:80%">Chủ đề</td>
+                      <td>Tùy chọn</td>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for chu_de in mon.chu_de.all %}
+                    <tr>
+                        <td><input class="form-control" type="text" value="{{chu_de.ten}}" disabled id="val_{{chu_de.id}}"></td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-success save" style="display: none;" data-toggle="modal" data-id="{{chu_de.id}}" id="save_{{chu_de.id}}">
+                                    Lưu
+                                </button>
+                                <button type="button" class="btn btn-warning cancel" style="display: none;" data-toggle="modal" data-id="{{chu_de.id}}" data-val="{{chu_de.ten}}" id="cancel_{{chu_de.id}}">
+                                    Hủy
+                                </button>
+                                <button type="button" class="btn btn-info edit" data-toggle="modal" data-id="{{chu_de.id}}" id="edit_{{chu_de.id}}">
+                                    Chỉnh sửa
+                                </button>
+                                <button type="button" class="btn btn-danger del" data-id="{{chu_de.id}}" id="del_{{chu_de.id}}">
+                                    Xóa
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="new_chu_de" role="dialog">
+      <div  class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" id="new_mon_title">Tạo mới chủ đề</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="col-md-12 form-group has-feedback">
+                    <textarea class="form-control has-feedback-left" name="ten" placeholder="Tên chủ đề" required></textarea>
+                  <span class="fa fa-edit form-control-feedback left" aria-hidden="true"></span>
+                </div>
+
+                 <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary" id="create_new_chu_de">Tạo mới</button>
+               <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<!--<script src="{% static 'datatables.net/js/jquery.dataTables.min.js' %}"></script>-->
+<!--<script src="{% static 'datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>-->
+<script src="{% static 'custom/js/giao_vien/subject_detail.js' %}"></script>
+{% endblock %}

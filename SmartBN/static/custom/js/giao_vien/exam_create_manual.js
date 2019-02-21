@@ -57,6 +57,7 @@ $(document).ready(function(){
                 }
             });
         }
+
     });
 
     $("#ck_dt").change(function() {
@@ -129,7 +130,7 @@ $(document).ready(function(){
         dien_tu: $("#ck_dt").prop("checked"),
         tu_luan: $("#ck_tl").prop("checked")
     }
-    path = "/hieu_pho/question_list_option_" + JSON.stringify(option);
+    path = "/giao_vien/question_list_option_" + JSON.stringify(option);
 
     var table_question = $("#list_question").DataTable({
         "ajax": {
@@ -171,6 +172,9 @@ $(document).ready(function(){
         }
     });
 
+
+
+
     $('#list_question tbody').on( 'click', 'tr', function () {
         if (table_question.data().count() == 0){
             return false;
@@ -179,7 +183,7 @@ $(document).ready(function(){
         $('#question_title').html('Câu hỏi #'+id);
         $.ajax({
             type: "GET",
-            url: "/hieu_pho/question_detail_"+id,
+            url: "/giao_vien/question_detail_"+id,
             success: function(data){
                 $("#khung_modal").html(data);
                 $("#question").modal("show");
@@ -230,7 +234,7 @@ $(document).ready(function(){
                 });
                 return false;
             }
-            so_diem = "x"
+            so_diem = 'x';
             chon_tn += 1;
             $("#max_tn").html("Trắc nhiệm: "+chon_tn+ "/" + max_tn);
         }
@@ -527,7 +531,7 @@ $(document).ready(function(){
                     cau_truc.ds_ch = ds_ch;
                     $.ajax({
                         type: "GET",
-                        url: "/hieu_pho/question_detail_review_"+JSON.stringify(cau_truc),
+                        url: "/giao_vien/question_detail_review_"+JSON.stringify(cau_truc),
                         success: function(data){
                             $("#3_con").html(data);
                             setTimeout(function(){
@@ -536,21 +540,6 @@ $(document).ready(function(){
                         },
                     });
                 }
-            }else if($("#step-1").css('display') == 'block'){
-//                var table_question = $("#list_question").DataTable({
-//                    "ajax": {
-//                        "type": "GET",
-//                        "url": "/hieu_pho/question_list_" + $("#gv_mon option:selected").val() +"_"+ $('#ky_thi option:selected').val(),
-//                        "contentType": "application/json; charset=utf-8",
-//                        "data": function(result){
-//                            return JSON.stringify(result);
-//                        },
-//                    },
-//                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-//                    "displayLength": 10,
-//                    "order": [[ 3, 'desc' ]],
-//                    "scrollCollapse": false,
-//                });
             }
 
 //

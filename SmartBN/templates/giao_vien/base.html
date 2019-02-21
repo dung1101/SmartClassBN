@@ -16,10 +16,10 @@
     <!-- Font Awesome -->
     <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
 
+    {% block css %}{% endblock %}
+
     <!-- Custom Theme Style -->
     <link href="{% static 'build/css/custom.min.css' %}" rel="stylesheet">
-
-    {% block css %}{% endblock %}
 
   </head>
 
@@ -60,14 +60,14 @@
                   <li><a><i class="fa fa-question-circle-o"></i> Quản lý câu hỏi <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="{% url 'giao_vien:question' %}">Tạo câu hỏi</a></li>
-                      <li><a href="{% url 'giao_vien:question_list' %}">Câu hỏi đã tạo</a></li>
+                      <li><a href="{% url 'giao_vien:question_list' %}">Danh sách câu hỏi</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-table"></i> Quản lý đề <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                        <li><a href="{% url 'giao_vien:exam_create_manual' %}">Tự tạo đề</a></li>
                       <li><a href="{% url 'giao_vien:exam_create_auto' %}">Tạo đề tự động</a></li>
-                      <li><a href="{% url 'giao_vien:exam_list' %}">Đề đã tạo</a></li>
+                      <li><a href="{% url 'giao_vien:exam_list' %}">Danh sách đề</a></li>
                     </ul>
                   </li>
                   <li>
@@ -110,29 +110,6 @@
         <!-- page content -->
         <div class="right_col" role="main">
           {% block content %}{% endblock %}
-          <div class="">
-            <div class="page-title">
-              <div class="title_left">
-                <h3>Plain Page</h3>
-              </div>
-            </div>
-
-            <div class="clearfix"></div>
-
-            <div class="row">
-              <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>Plain Page</h2>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="x_content">
-                      Add content to the page ...
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
         <!-- /page content -->
 
@@ -153,7 +130,51 @@
     <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
     <!-- Custom Theme Scripts -->
     <script src="{% static 'build/js/custom.min.js' %}"></script>
+    <!--sweat alert-->
+    <script src="{% static 'sweetalert2.all.min.js' %}"></script>
 
     {% block js %}{% endblock %}
   </body>
 </html>
+
+<!--<div class="row">-->
+  <!--<div class="col-md-1"></div>-->
+  <!--<div class="col-md-2">-->
+    <!--<img src="/static/build/images/img.jpg" style="width: 150px;">-->
+    <!--<h5>Nguyễn AA</h5>-->
+  <!--</div>-->
+  <!--<div class="col-md-1"></div>-->
+  <!--<div class="col-md-7">-->
+    <!--<table class="mytable">-->
+      <!--<tbody>-->
+      <!--<tr class="mytable">-->
+        <!--<td>-->
+          <!--<b>Môn: Địa lý - 10</b><br>-->
+          <!--<b>Chủ đề: Việt Nam</b><br>-->
+          <!--<b>Điểm: 1 điểm</b><br>-->
+        <!--</td>-->
+        <!--<td>-->
+          <!--<b>Kì học: Giữa kì I</b><br>-->
+          <!--<b>Độ khó: Trung bình</b><br>-->
+          <!--<b>Ngày tạo: 2019-02-21 02:36</b><br>-->
+        <!--</td>-->
+      <!--</tr>-->
+    <!--</tbody></table>-->
+  <!--</div>-->
+  <!--<div class="col-md-1"></div>-->
+<!--</div>-->
+
+<!--<table style="text-align:center">-->
+  <!--<tr>-->
+    <!--<td>-->
+      <!--<b>Môn: Địa lý - 10</b><br>-->
+      <!--<b>Chủ đề: Việt Nam</b><br>-->
+      <!--<b>Điểm: 1 điểm</b><br>-->
+    <!--</td>-->
+    <!--<td>-->
+      <!--<b>Kì học: Giữa kì I</b><br>-->
+      <!--<b>Độ khó: Trung bình</b><br>-->
+      <!--<b>Ngày tạo: 2019-02-21 02:36</b><br>-->
+    <!--</td>-->
+  <!--</tr>-->
+<!--</table>-->

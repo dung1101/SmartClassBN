@@ -23,7 +23,7 @@ $(document).ready(function(){
             return false;
         }
         var id = $(this).find('p').first().attr('id').split("_")[2];
-        $("#khung_modal").load("/hieu_pho/question_detail_"+id);
+        $("#khung_modal").load("/giao_vien/question_detail_"+id);
         $("#question_title").text("Câu hỏi "+id);
         $("#question").modal("show");
     });

@@ -2,29 +2,329 @@
   {
     "model": "giao_vien.Truong",
     "fields": {
-      "ten": "THPT Ngô Sĩ Liên"
+      "ten": "Trường THCS Ngô Sĩ Liên"
     }
   },
   {
     "model": "giao_vien.Mon",
     "fields": {
-      "ten": "Toán",
-      "khoi": 10
+      "ten": "Công nghệ",
+      "khoi": 6
     }
   },
   {
     "model": "giao_vien.Mon",
     "fields": {
-      "ten": "Vật Lý",
-      "khoi": 10
+      "ten": "Công nghệ",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Công nghệ",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Công nghệ",
+      "khoi": 9
     }
   },
   {
     "model": "giao_vien.Mon",
     "fields": {
       "ten": "Hóa học",
-      "khoi": 10
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Hóa học",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Lịch sử",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Lịch sử",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Lịch sử",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Lịch sử",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Mĩ thuật",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Mĩ thuật",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Mĩ thuật",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Mĩ thuật",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Ngữ văn",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Ngữ văn",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Ngữ văn",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Ngữ văn",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Sinh học",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Sinh học",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Sinh học",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Sinh học",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tin học",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tin học",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tin học",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tin học",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tiếng Anh",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tiếng Anh",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tiếng Anh",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Tiếng Anh",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Toán học",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Toán học",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Toán học",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Toán học",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Vật lý",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Vật lý",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Vật lý",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Vật lý",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Âm nhạc",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Âm nhạc",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Âm nhạc",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Âm nhạc",
+      "khoi": 9
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Địa lý",
+      "khoi": 6
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Địa lý",
+      "khoi": 7
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Địa lý",
+      "khoi": 8
+    }
+  },
+  {
+    "model": "giao_vien.Mon",
+    "fields": {
+      "ten": "Địa lý",
+      "khoi": 9
     }
   }
-
 ]

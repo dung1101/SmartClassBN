@@ -5,7 +5,7 @@ import random
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
@@ -33,25 +33,18 @@ def subject(request):
             mon = get_object_or_404(Mon, pk=request.POST['id_xoa'])
             mon.delete()
             return JsonResponse({"status": "Done", "messages": 'Xóa thành công'})
-    return render(request, 'hieu_pho/subject.html')
+    return render(request, 'giao_vien/subject.html')
 
 
 @gv_authenticate
 def subject_list(request):
     data = []
-    for mon in Mon.objects.all():
+    for mon in request.user.mon.all():
         ten = '<p id="ten_{0}">{1}</p>'.format(mon.id, mon.ten)
         khoi = '<p id="khoi_{0}">{1}</p>'.format(mon.id, mon.khoi)
-        link_mon = reverse("hieu_pho:subject_detail", kwargs={'id': mon.id})
+        link_mon = reverse("giao_vien:subject_detail", kwargs={'id': mon.id})
         options = '''
             <div class="btn-group">
-                <button type="button" class="btn btn-info edit" data-toggle="modal" data-target="#new_mon" 
-                data-id="{mon.id}" id="edit_{mon.id}" data-title='edit'>
-                    Chỉnh sửa
-                </button>
-                <button type="button" class="btn btn-danger del" data-id="{mon.id}" id="del_{mon.id}">
-                    Xóa
-                </button>
                 <a class="btn btn-success" href="{link_mon}" target='_blank'>
                     Chủ đề
                 </a> 
@@ -63,123 +56,38 @@ def subject_list(request):
 
 @gv_authenticate
 def subject_detail(request, id):
-    mon = get_object_or_404(Mon, pk=id)
-    if request.method == "POST":
-        # tạo mới
-        if "ten_moi" in request.POST:
-            mon.chu_de.create(ten=request.POST['ten_moi'])
-            return JsonResponse({"status": "Done", "messages": 'Tạo mới thành công'})
-        # xóa
-        elif "id_xoa" in request.POST:
-            chu_de = get_object_or_404(ChuDe, pk=request.POST['id_xoa'])
-            chu_de.delete()
-            return JsonResponse({"status": "Done", "messages": 'Xóa thành công'})
-        # sửa
-        elif "id_sua" in request.POST:
-            chu_de = get_object_or_404(ChuDe, pk=request.POST['id_sua'])
-            chu_de.ten = request.POST['ten_sua']
-            chu_de.save()
-            return JsonResponse({"status": "Done", "messages": 'Sửa thành công'})
-    return render(request, 'hieu_pho/subject_detail.html', {'mon': mon})
-
-
-@gv_authenticate
-def teacher(request):
-    content = {
-        "mon": Mon.objects.all(),
-    }
-    if request.method == "POST":
-        # tạo mới
-        if request.POST['kieu'] == 'new':
-            if int(request.POST['gioi_tinh']) == 1:
-                gioi_tinh = GiaoVien.NAM
-            else:
-                gioi_tinh = GiaoVien.NU
-            try:
-                giao_vien = GiaoVien.objects.create(username=request.POST['username'],
-                                                    password=request.POST['password'],
-                                                    ho_ten=request.POST['ho_ten'],
-                                                    truong=Truong.objects.all()[0],
-                                                    gioi_tinh=gioi_tinh)
-            except IntegrityError:
-                return JsonResponse({"status": "False", "messages": 'Username đã tồn tại'})
-            list_mon = request.POST['list_mon']
-            list_mon = json.loads(list_mon)
-            for mon in list_mon:
-                ten, khoi = mon.split(" - ")
-                try:
-                    mon_object = Mon.objects.get(ten=ten, khoi=int(khoi))
-                except ObjectDoesNotExist:
-                    continue
-                giao_vien.mon.add(mon_object)
-            giao_vien.save()
-            return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
-
-        # xóa
-        elif request.POST['kieu'] == 'del':
-            giao_vien = get_object_or_404(GiaoVien, pk=request.POST['id_xoa'])
-            giao_vien.delete()
-            return JsonResponse({"status": "Done", "messages": 'Xóa thành công'})
-
-        # chỉnh sửa
-        else:
-            if int(request.POST['gioi_tinh']) == 1:
-                gioi_tinh = GiaoVien.NAM
-            else:
-                gioi_tinh = GiaoVien.NU
-            giao_vien = get_object_or_404(GiaoVien, pk=request.POST['id'])
-            giao_vien.gioi_tinh = gioi_tinh
-            giao_vien.ho_ten = request.POST['ho_ten']
-            list_mon = request.POST['list_mon']
-            list_mon = json.loads(list_mon)
-            giao_vien.mon.clear()
-            for mon in list_mon:
-                ten, khoi = mon.split(" - ")
-                try:
-                    mon_object = Mon.objects.get(ten=ten, khoi=int(khoi))
-                except ObjectDoesNotExist:
-                    continue
-                giao_vien.mon.add(mon_object)
-            giao_vien.save()
-
-            return JsonResponse({"status": "Done", "messages": 'Chỉnh sửa thành công'})
-
-    return render(request, 'hieu_pho/teacher.html', content)
-
-
-@gv_authenticate
-def teacher_list(request):
-    data = []
-    for giao_vien in GiaoVien.objects.filter(hieu_pho=False):
-        ho_ten = '<p id="ho_ten_{0}">{1}</p>'.format(giao_vien.id, giao_vien.ho_ten)
-        gioi_tinh = '<p id="gioi_tinh_{0}">{1}</p>'.format(giao_vien.id, giao_vien.gioi_tinh)
-        username = '<p id="username_{0}">{1}</p>'.format(giao_vien.id, giao_vien.username)
-        mon = ['<p class="mon_{giao_vien.id}">{m.ten_dai}</p>'.format(giao_vien=giao_vien,
-                                                                      m=m) for m in giao_vien.mon.all()]
-        mon = "".join(mon)
-        options = '''
-                <div class="btn-group">
-                    <button type="button" class="btn btn-info edit" data-toggle="modal" data-target="#new_teacher" 
-                    data-id="{giao_vien.id}" id="edit_{giao_vien.id}" data-title='edit'>
-                        Chỉnh sửa
-                    </button>
-                    <button type="button" class="btn btn-danger del" data-id="{giao_vien.id}" id="del_{giao_vien.id}">
-                        Xóa
-                    </button>
-                </div>
-            '''.format(giao_vien=giao_vien)
-        data.append([ho_ten, gioi_tinh, mon, username, options])
-    return JsonResponse({"data": data})
+    try:
+        mon = request.user.mon.get(id=id)
+    except ObjectDoesNotExist:
+        raise Http404("Trang này không tồn tại")
+    else:
+        if request.method == "POST":
+            # tạo mới
+            if "ten_moi" in request.POST:
+                mon.chu_de.create(ten=request.POST['ten_moi'])
+                return JsonResponse({"status": "Done", "messages": 'Tạo mới thành công'})
+            # xóa
+            elif "id_xoa" in request.POST:
+                chu_de = get_object_or_404(ChuDe, pk=request.POST['id_xoa'])
+                chu_de.delete()
+                return JsonResponse({"status": "Done", "messages": 'Xóa thành công'})
+            # sửa
+            elif "id_sua" in request.POST:
+                chu_de = get_object_or_404(ChuDe, pk=request.POST['id_sua'])
+                chu_de.ten = request.POST['ten_sua']
+                chu_de.save()
+                return JsonResponse({"status": "Done", "messages": 'Sửa thành công'})
+    return render(request, 'giao_vien/subject_detail.html', {'mon': mon})
 
 
 @gv_authenticate
 def question(request):
-    content = {
-        "list_mon": Mon.objects.all(),
-    }
     if request.method == "POST":
         ten_mon, lop_mon = request.POST['mon'].split(" - ")
-        mon = Mon.objects.get(ten=ten_mon, khoi=int(lop_mon))
+        try:
+            mon = request.user.mon.get(ten=ten_mon, khoi=int(lop_mon))
+        except ObjectDoesNotExist:
+            return JsonResponse({"status": "False", "messages": 'Bạn không có quyền'})
         chu_de = mon.chu_de.get(ten=request.POST['chu_de'])
         the_loai, dang = request.POST['dang_cau_hoi'].split(" + ")
         if 'nd_cau_hoi' in request.POST:
@@ -251,15 +159,27 @@ def question(request):
             handle_uploaded_file(request.FILES['dinh_kem'])
         ch.save()
         return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
-    return render(request, 'hieu_pho/question_create.html', content)
+    content = {
+        "list_mon": request.user.mon.all(),
+    }
+    return render(request, 'giao_vien/question_create.html', content)
 
 
 @gv_authenticate
 def question_list(request):
+    if request.method == "POST":
+        try:
+            cau_hoi = CauHoi.objects.get(id=request.POST['id_xoa'])
+        except ObjectDoesNotExist:
+            return JsonResponse({"status": "False", "messages": 'Không tìm thấy'})
+        if cau_hoi.giao_vien_tao != request.user:
+            return JsonResponse({"status": "False", "messages": 'Chỉ người tạo mới có quyền xóa'})
+        cau_hoi.delete()
+        return JsonResponse({"status": "Done", "messages": 'Xóa thành công'})
     content = {
-        "list_mon": Mon.objects.all(),
+        "list_mon": request.user.mon.all(),
     }
-    return render(request, 'hieu_pho/question_list.html', content)
+    return render(request, 'giao_vien/question_list.html', content)
 
 
 @gv_authenticate
@@ -294,9 +214,13 @@ def question_list_option(request, option):
 @gv_authenticate
 def question_list_data(request, id):
     if id == 0:
-        danh_sach_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False)
+        mon = request.user.mon.all()
     else:
-        danh_sach_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon_id=id)
+        try:
+            mon = request.user.mon.filter(id=id)
+        except ObjectDoesNotExist:
+            return JsonResponse({"data": []})
+    danh_sach_cau_hoi = CauHoi.objects.filter(la_cau_hoi_nho=False, mon__in=mon)
     data = []
     for cau_hoi in danh_sach_cau_hoi:
         chu_de = '<p id="chu_de_{cau_hoi.id}">{cau_hoi.chu_de.ten}</p>'.format(cau_hoi=cau_hoi)
@@ -315,28 +239,36 @@ def question_detail_data(request, id):
     cau_hoi = get_object_or_404(CauHoi, pk=id)
     thoi_gian_tao = str(cau_hoi.thoi_gian_tao)[:-16]
     if cau_hoi.dang != CauHoi.TN:
-        so_diem = "<h4>Điểm số: {} điểm</h4>".format(cau_hoi.so_diem)
+        so_diem = "<h5>Điểm số: {} điểm</h5>".format(cau_hoi.so_diem)
+        kieu_dap_an = '1'
     else:
         so_diem = ""
+        kieu_dap_an = 'A'
+    if cau_hoi.the_loai == CauHoi.TEXT:
+        dinh_kem = ''
+    else:
+        dinh_kem = """<img src="/media/{}" style="margin: 1em;width:80%">""".format(cau_hoi.dinh_kem)
+
     if cau_hoi.co_cau_hoi_nho:
         chi_tiet = """
         <input type="hidden" value={cau_hoi.id} name='id'>
         <input type="hidden" value='{cau_hoi.dang}' name='dang'>
         <input type="hidden" value='{cau_hoi.so_diem}' name='so_diem'>
         <div id=chi_tiet_{cau_hoi.id} style="display:block;">
-            <h4>Môn: {cau_hoi.mon.ten_dai}</h4>
-            <h4>Chủ đề: {cau_hoi.chu_de.ten}</h4>
-            <h4>Độ khó: {cau_hoi.do_kho}</h4>
+            <h5>Môn: {cau_hoi.mon.ten_dai}</h4>
+            <h5>Chủ đề: {cau_hoi.chu_de.ten}</h4>
+            <h5>Độ khó: {cau_hoi.do_kho}</h4>
             {so_diem}
-            <h4>Giáo viên tạo: {cau_hoi.giao_vien_tao.ho_ten}</h4>
-            <h5>Ngày tạo: {thoi_gian_tao}</h5>
+            <h5>Kì học: {cau_hoi.ky_hoc}</5>
+            <h5>Giáo viên tạo: {cau_hoi.giao_vien_tao.ho_ten}</h4>
+            <h6>Ngày tạo: {thoi_gian_tao}</h5>
             <hr>
+            {dinh_kem}
             {cau_hoi.noi_dung}
-            "<ol type='a'>"
-        </div>
-        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao, so_diem=so_diem)
+            <ol type='a'>
+        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao, so_diem=so_diem, dinh_kem=dinh_kem)
         for index, ch in enumerate(cau_hoi.cau_hoi_nho.all()):
-            chi_tiet += "<li>{}<ol type='A'>".format(ch.noi_dung)
+            chi_tiet += "<li>{}<ol type='{}'>".format(ch.noi_dung, kieu_dap_an)
             for index, da in enumerate(ch.dap_an.all()):
                 if da.dung:
                     dung = "correct_answer"
@@ -346,23 +278,26 @@ def question_detail_data(request, id):
                 <li class='{dung}'>{da.noi_dung}</li>
                 """.format(da=da, dung=dung)
             chi_tiet += "</ol></li>"
-        chi_tiet += "</ol>"
+        chi_tiet += "</ol></div>"
     else:
         chi_tiet = """
         <input type="hidden" value={cau_hoi.id} name='id'>
         <input type="hidden" value='{cau_hoi.dang}' name='dang'>
         <input type="hidden" value='{cau_hoi.so_diem}' name='so_diem'>
         <div id=chi_tiet_{cau_hoi.id} style="display:block;">
-            <h4>Môn: {cau_hoi.mon.ten_dai}</h4>
-            <h4>Chủ đề: {cau_hoi.chu_de.ten}</h4>
-            <h4>Độ khó: {cau_hoi.do_kho}</h4>
+            <h5>Môn: {cau_hoi.mon.ten_dai}</h4>
+            <h5>Chủ đề: {cau_hoi.chu_de.ten}</h4>
+            <h5>Độ khó: {cau_hoi.do_kho}</h4>
             {so_diem}
-            <h4>Giáo viên tạo: {cau_hoi.giao_vien_tao.ho_ten}</h4>
-            <h5>Ngày tạo: {thoi_gian_tao}</h5>
+            <h5>Kì học: {cau_hoi.ky_hoc}</5>
+            <h5>Giáo viên tạo: {cau_hoi.giao_vien_tao.ho_ten}</h4>
+            <h6>Ngày tạo: {thoi_gian_tao}</h5>
             <hr>
+            {dinh_kem}
             {cau_hoi.noi_dung}
-            <ol type='A'>
-        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao, so_diem=so_diem)
+            <ol type='{kieu_dap_an}'>
+        """.format(cau_hoi=cau_hoi, thoi_gian_tao=thoi_gian_tao, so_diem=so_diem,
+                   kieu_dap_an=kieu_dap_an, dinh_kem=dinh_kem)
         for index, da in enumerate(cau_hoi.dap_an.all()):
             if da.dung:
                 dung = "correct_answer"
@@ -371,7 +306,7 @@ def question_detail_data(request, id):
             chi_tiet += """
             <li class='{dung}'>{da.noi_dung}</li>
             """.format(da=da, dung=dung)
-        chi_tiet += "</ol>"
+        chi_tiet += "</ol></div>"
     return HttpResponse(chi_tiet)
 
 
@@ -383,65 +318,90 @@ def question_detail_review(request, cau_truc):
         diem_tn = round(cau_truc['pt_tn'] / cau_truc['so_tn'], 2)
         chi_tiet += "<b><u>Phần:</u> Trắc nhiệm</b><br>"
         for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Trắc nhiệm")):
+            if cau_hoi.the_loai == CauHoi.TEXT:
+                dinh_kem = ''
+            else:
+                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;width:80%">""".format(cau_hoi.dinh_kem)
             if cau_hoi.co_cau_hoi_nho:
                 ds_cau_hoi_nho = cau_hoi.cau_hoi_nho.all()
                 diem_con = round(diem_tn / len(ds_cau_hoi_nho), 2)
                 chi_tiet += """
                     <b>Câu {index} </b>({diem} điểm)
+                    {dinh_kem}
                     {cau_hoi.noi_dung}
                     <ol type='a'>
-                """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem_tn)
+                """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem_tn, dinh_kem=dinh_kem)
                 for ch in ds_cau_hoi_nho:
                     chi_tiet += "<li><div>({diem} điểm){}<ol type='A'>".format(ch.noi_dung, diem=diem_con)
                     for da in ch.dap_an.all():
+                        if da.dung:
+                            dung = "dap_an_trac_nhiem"
+                        else:
+                            dung = ''
                         chi_tiet += """
-                        <li><div>{da.noi_dung}</div></li>
-                        """.format(da=da)
+                        <li class="{dung}"><div>{da.noi_dung}</div></li>
+                        """.format(da=da, dung=dung)
                     chi_tiet += "</ol></div></li>"
                 chi_tiet += "</ol>"
             else:
                 chi_tiet += """
                     <b>Câu {index} </b>({diem} điểm)
+                    {dinh_kem}
                     {cau_hoi.noi_dung}
                     <ol type='A'>
-                """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem_tn)
+                """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem_tn, dinh_kem=dinh_kem)
                 for da in cau_hoi.dap_an.all():
+                    if da.dung:
+                        dung = "dap_an_trac_nhiem"
+                    else:
+                        dung = ''
                     chi_tiet += """
-                    <li><div>{da.noi_dung}</div></li>
-                    """.format(da=da)
+                    <li class="{dung}"><div>{da.noi_dung}</div></li>
+                    """.format(da=da, dung=dung)
                 chi_tiet += "</ol>"
 
     if cau_truc['so_dt'] > 0:
         chi_tiet += "<b><u>Phần:</u> Điền từ</u></b><br>"
         for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Điền từ")):
+            if cau_hoi.the_loai == CauHoi.TEXT:
+                dinh_kem = ''
+            else:
+                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;width:80%">""".format(cau_hoi.dinh_kem)
             chi_tiet += """
                 <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                {dinh_kem}
                 {cau_hoi.noi_dung}
-
-            """.format(cau_hoi=cau_hoi, index=index + 1)
-            # for da in cau_hoi.dap_an.all():
-            #     chi_tiet += """
-            #     <li>{da.noi_dung}</li>
-            #     """.format(da=da)
-            # chi_tiet += "</ol>"
+                <ol type="1">
+            """.format(cau_hoi=cau_hoi, index=index + 1, dinh_kem=dinh_kem)
+            for da in cau_hoi.dap_an.all():
+                chi_tiet += """
+                <li class="dap_an_dien_tu" >{da.noi_dung}</li>
+                """.format(da=da)
+            chi_tiet += "</ol>"
 
     if cau_truc['so_tl'] > 0:
         chi_tiet += "<b><u>Phần:</u> Tự luận</u></b><br>"
         for index, cau_hoi in enumerate(CauHoi.objects.filter(id__in=cau_truc['ds_ch'], dang="Tự luận")):
+            if cau_hoi.the_loai == CauHoi.TEXT:
+                dinh_kem = ''
+            else:
+                dinh_kem = """<br><img src="/media/{}" style="margin: 1em; width:80%">""".format(cau_hoi.dinh_kem)
             if cau_hoi.co_cau_hoi_nho:
                 chi_tiet += """
                     <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                    {dinh_kem}
                     {cau_hoi.noi_dung}
                     <ol type='a'>
-                """.format(cau_hoi=cau_hoi, index=index + 1)
+                """.format(cau_hoi=cau_hoi, index=index + 1, dinh_kem=dinh_kem)
                 for ch in cau_hoi.cau_hoi_nho.all():
                     chi_tiet += "<li>{}</li>".format(ch.noi_dung)
                 chi_tiet += "</ol>"
             else:
                 chi_tiet += """
                     <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
+                    {dinh_kem}
                     {cau_hoi.noi_dung}
-                """.format(cau_hoi=cau_hoi, index=index + 1)
+                """.format(cau_hoi=cau_hoi, index=index + 1, dinh_kem=dinh_kem)
     return HttpResponse(chi_tiet)
 
 
@@ -460,10 +420,10 @@ def exam_create_manual(request):
     else:
         year = [now.year, now.year + 1]
     content = {
-        "list_mon": Mon.objects.all(),
+        "list_mon": request.user.mon.all(),
         "year": year,
     }
-    return render(request, 'hieu_pho/exam_create_manual.html', content)
+    return render(request, 'giao_vien/exam_create_manual.html', content)
 
 
 @gv_authenticate
@@ -481,7 +441,6 @@ def exam_create_auto(request):
         else:
             ky_hoc = ['Giữa kì I', 'Cuối kì I', "Giữa kì II", 'Cuối kì II']
         chi_tiet = ""
-        dap_an_html = ""
         for dang, chi_tiet_chu_de in chi_tiet_so_luong.items():
 
             if dang == "Trắc nhiệm":
@@ -525,14 +484,13 @@ def exam_create_auto(request):
                                                            chu_de__in=ds_chu_de,
                                                            do_kho=CauHoi.KHO)
                         try:
-                            ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_tb']))
+                            ds_tn.extend(random.sample(set(ds_cau_hoi), so_luong['r_tn_k']))
                         except ValueError:
                             return JsonResponse({"status": "False",
                                                  "messages": 'Không đủ câu hỏi trắc nhiệm khó trong ngân hàng'})
                 so_luong_tn = len(ds_tn)
                 diem = round(cau_truc['r_pt_tn'] / so_luong_tn, 2)
                 chi_tiet += "<b><u>Phần:</u> Trắc nhiệm</b><br>"
-                dap_an_html = "<b><u>Phần:</u> Trắc nhiệm</b><br>"
                 for index, cau_hoi in enumerate(ds_tn):
                     if cau_hoi.co_cau_hoi_nho:
                         ds_cau_hoi_nho = cau_hoi.cau_hoi_nho.all()
@@ -543,21 +501,17 @@ def exam_create_auto(request):
                             {cau_hoi.noi_dung}
                             <ol type='a'>
                         """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem)
-                        dap_an_html += """
-                            <p><b>Câu {}:</b> 
-                            <ol type='a'>
-                        """.format(index + 1)
                         for ch in ds_cau_hoi_nho:
                             chi_tiet += "<li><div>({diem} điểm){}<ol type='A'>".format(ch.noi_dung, diem=diem_con)
-                            dap_an_html += "<li>"
                             for k, da in enumerate(ch.dap_an.all()):
-                                chi_tiet += """
-                                <li><div>{da.noi_dung}</div></li>
-                                """.format(da=da)
                                 if da.dung:
-                                    dap_an_html += """
-                                     {s}</p>{da.noi_dung}</li>
-                                    """.format(s=chr(ord(str(k)) + 17), da=da)
+                                    dung = "dap_an_trac_nhiem"
+                                else:
+                                    dung = ""
+                                chi_tiet += """
+                                <li class={dung}><div>{da.noi_dung}</div></li>
+                                """.format(da=da, dung=dung)
+
                             chi_tiet += "</ol></div></li>"
                         chi_tiet += "</ol>"
                     else:
@@ -566,17 +520,14 @@ def exam_create_auto(request):
                             {cau_hoi.noi_dung}
                             <ol type='A'>
                         """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem)
-                        dap_an_html += """
-                            <p><b>Câu {}:</b> 
-                        """.format(index + 1)
                         for k, da in enumerate(cau_hoi.dap_an.all()):
-                            chi_tiet += """
-                            <li><div>{da.noi_dung}</div></li>
-                            """.format(da=da)
                             if da.dung:
-                                dap_an_html += """
-                                 {s}</p>{da.noi_dung}
-                                """.format(s=chr(ord(str(k)) + 17), da=da)
+                                dung = "dap_an_trac_nhiem"
+                            else:
+                                dung = ""
+                            chi_tiet += """
+                            <li class={dung}><div>{da.noi_dung}</div></li>
+                            """.format(da=da, dung=dung)
                         chi_tiet += "</ol>"
 
             elif dang == "Điền từ":
@@ -593,6 +544,9 @@ def exam_create_auto(request):
                                                      chu_de__in=ds_chu_de,
                                                      do_kho=chi_tiet_chu_de['Độ khó'][i],
                                                      so_diem=chi_tiet_chu_de['Điểm'][i])
+                    if len(ds_ch_dt) == 0:
+                        return JsonResponse({"status": "False",
+                                             "messages": 'Không đủ câu hỏi điền từ trong ngân hàng'})
                     cau_hoi = random.choice(ds_ch_dt)
                     count = 1
                     while count < 10 and cau_hoi in ds_dt:
@@ -604,18 +558,17 @@ def exam_create_auto(request):
                     ds_dt.append(cau_hoi)
 
                 chi_tiet += "<b><u>Phần:</u> Điền từ</u></b><br>"
-                dap_an_html += "<b><u>Phần:</u> Điền từ</u></b><br>"
                 for index, cau_hoi in enumerate(ds_dt):
                     chi_tiet += """
                         <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
                         {cau_hoi.noi_dung}
+                        <ol type="1">
                     """.format(cau_hoi=cau_hoi, index=index + 1)
-                    dap_an_html += "<p><b>Câu {}:</b></p><ol type='a'>".format(index + 1)
                     for da in cau_hoi.dap_an.all():
-                        dap_an_html += """
-                        <li>{da.noi_dung}</li>
+                        chi_tiet += """
+                        <li class="dap_an_dien_tu" >{da.noi_dung}</li>
                         """.format(da=da)
-                    dap_an_html += "</ol>"
+                    chi_tiet += '</ol>'
             else:
                 ds_tl = []
                 for i in range(0, len(chi_tiet_chu_de['Chủ đề'])):
@@ -630,6 +583,9 @@ def exam_create_auto(request):
                                                      chu_de__in=ds_chu_de,
                                                      do_kho=chi_tiet_chu_de['Độ khó'][i],
                                                      so_diem=chi_tiet_chu_de['Điểm'][i])
+                    if len(ds_ch_tl) == 0:
+                        return JsonResponse({"status": "False",
+                                             "messages": 'Không đủ câu hỏi tự luận trong ngân hàng'})
                     cau_hoi = random.choice(ds_ch_tl)
                     count = 1
                     while count < 10 and cau_hoi in ds_tl:
@@ -715,8 +671,7 @@ def exam_create_auto(request):
                           thoi_gian=request.POST['thoi_gian'],
                           giao_vien_tao=request.user,
                           ky_hoc=request.POST['ky_hoc'],
-                          cau_hoi_html=cau_hoi_html,
-                          dap_an_html=dap_an_html)
+                          cau_hoi_html=cau_hoi_html)
         return JsonResponse({"status": "Done", "messages": 'Tạo thành công'})
     now = datetime.datetime.now()
     if now.month < 7:
@@ -724,24 +679,33 @@ def exam_create_auto(request):
     else:
         year = [now.year, now.year + 1]
     content = {
-        "list_mon": Mon.objects.all(),
+        "list_mon": request.user.mon.all(),
         "year": year,
     }
-    return render(request, 'hieu_pho/exam_create_auto.html', content)
+    return render(request, 'giao_vien/exam_create_auto.html', content)
 
 
 @gv_authenticate
 def exam_list(request):
+    if request.method == "POST":
+        try:
+            de = De.objects.get(id=request.POST['id_xoa'])
+        except ObjectDoesNotExist:
+            return JsonResponse({"status": "False", "messages": 'Không tìm thấy'})
+        if de.giao_vien_tao != request.user:
+            return JsonResponse({"status": "False", "messages": 'Chỉ người tạo mới có quyền xóa'})
+        de.delete()
+        return JsonResponse({"status": "Done", "messages": 'Xóa thành công'})
     content = {
-        "list_mon": Mon.objects.all(),
+        "list_mon": request.user.mon.all(),
     }
-    return render(request, 'hieu_pho/exam_list.html', content)
+    return render(request, 'giao_vien/exam_list.html', content)
 
 
 @gv_authenticate
 def exam_list_data(request, id):
     if id == 0:
-        ds_de = De.objects.all()
+        ds_de = De.objects.filter(mon__in=request.user.mon.all())
     else:
         ds_de = De.objects.filter(mon=Mon.objects.get(id=id))
     data = []
@@ -783,15 +747,8 @@ def profile(request):
             if check_password(request.POST['pass1'], user.password):
                 user.set_password(request.POST['pass2'])
                 user.save()
-                return JsonResponse({"status": "Done", "messages": 'Cập nhật thành công'})
+                return JsonResponse({"status": "Done", "messages": reverse('chung:login')})
             else:
                 return JsonResponse({"status": "False", "messages": 'Mật khẩu không đúng'})
-    return render(request, 'hieu_pho/profile.html')
+    return render(request, 'giao_vien/profile.html')
 
-# for kh in ky_hoc:
-# ...     for d in diem:
-# ...             for dk in do_kho:
-# ...                     for cd in chu_de:
-# ...                             for i in range(1,6):
-# ...                                     CauHoi.objects.create(giao_vien_tao=giao_vien, mon=mon, noi_dung="<p>{}{}{}{}{}</p>".format(i,cd.ten,dk,d,kh), do_kho=dk, chu_de=cd, ky_hoc=kh, dang="Tự luận", the_loai="Văn bản", so_diem=d)
-# ...

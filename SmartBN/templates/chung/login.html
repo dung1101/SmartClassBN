@@ -27,7 +27,7 @@
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
-            <form>
+            <form id="login_form">
               <h1>Smart Class</h1>
               {% csrf_token %}
               <div>
@@ -36,11 +36,11 @@
               <div>
                 <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required="" />
               </div>
-              <div>
-                <button class="btn btn-success submit form-control" id="login">Đăng nhập</button>
-              </div>
               <div class="clearfix"></div>
             </form>
+            <div>
+              <button class="btn btn-success form-control" id="login">Đăng nhập</button>
+            </div>
           </section>
         </div>
 

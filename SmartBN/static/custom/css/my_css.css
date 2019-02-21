@@ -203,6 +203,10 @@ li div {
         margin-left: 15px;
     }
 
+    .dap_an_dien_tu {
+        display: none;
+    }
+
     .col-md-2{
         position: relative;
         min-height: 1px;
@@ -313,4 +317,12 @@ li div {
 .exam_option_row{
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+.dap_an_trac_nhiem {
+    color:red;
+}
+
+.dap_an_dien_tu {
+    color:red;
 }
