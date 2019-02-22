@@ -330,7 +330,7 @@ def question_detail_data(request, id):
     if cau_hoi.the_loai == CauHoi.TEXT:
         dinh_kem = ''
     else:
-        dinh_kem = """<img src="/media/{}" style="margin: 1em;width:80%">""".format(cau_hoi.dinh_kem)
+        dinh_kem = """<img src="/media/{}" style="margin: 1em;max-width:80%">""".format(cau_hoi.dinh_kem)
     if cau_hoi.co_cau_hoi_nho:
         chi_tiet = """
         <input type="hidden" value={cau_hoi.id} name='id'>
@@ -404,7 +404,7 @@ def question_detail_review(request, cau_truc):
             if cau_hoi.the_loai == CauHoi.TEXT:
                 dinh_kem = ''
             else:
-                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;width:80%">""".format(cau_hoi.dinh_kem)
+                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;max-width:80%">""".format(cau_hoi.dinh_kem)
             if cau_hoi.co_cau_hoi_nho:
                 ds_cau_hoi_nho = cau_hoi.cau_hoi_nho.all()
                 diem_con = round(diem_tn / len(ds_cau_hoi_nho), 2)
@@ -449,7 +449,7 @@ def question_detail_review(request, cau_truc):
             if cau_hoi.the_loai == CauHoi.TEXT:
                 dinh_kem = ''
             else:
-                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;width:80%">""".format(cau_hoi.dinh_kem)
+                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;max-width:80%">""".format(cau_hoi.dinh_kem)
             chi_tiet += """
                 <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
                 {dinh_kem}
@@ -468,7 +468,7 @@ def question_detail_review(request, cau_truc):
             if cau_hoi.the_loai == CauHoi.TEXT:
                 dinh_kem = ''
             else:
-                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;width:80%">""".format(cau_hoi.dinh_kem)
+                dinh_kem = """<br><img src="/media/{}" style="margin: 1em;max-width:80%">""".format(cau_hoi.dinh_kem)
             if cau_hoi.co_cau_hoi_nho:
                 chi_tiet += """
                     <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
@@ -710,9 +710,9 @@ def exam_create_auto(request):
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-1">
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-8">
                     <p>Họ tên học sinh: ............................................................................
                     </p>
                 </div>

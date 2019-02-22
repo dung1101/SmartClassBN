@@ -152,7 +152,7 @@ li div {
 
 
 @media print{
-    @page{margin:0px auto;}
+    /*@page{margin:0px auto;}*/
 
     .exam {
         display: block;

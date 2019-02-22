@@ -34,6 +34,12 @@ $(document).ready(function(){
         return true;
     });
 
+    $("#convert").click(function(){
+        var content = $("#khung_exam").html();
+        var converted = htmlDocx.asBlob(content);
+        saveAs(converted, 'test.docx');
+    })
+
     $("#remove_exam").click(function(){
         $.ajax({
             type: "POST",

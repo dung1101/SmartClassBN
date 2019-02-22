@@ -106,14 +106,14 @@ $(document).ready(function(){
     $("#list_mon").on('click', '.del', function(){
         var id = $(this).data("id");
         Swal.fire({
-          title: 'Cảnh báo',
-          text: " Bạn chắc chắn muốn xóa ?",
+          title: 'Bạn chắc chắn muốn xóa ?',
+          text: "Tất cả dữ liệu về câu hỏi, đề thi thuộc bộ môn sẽ mất!",
           type: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'Đúng',
-          cancelButtonText: 'Sai'
+          confirmButtonText: 'Có',
+          cancelButtonText: 'Không'
         }).then((result) => {
           if (result.value) {
             var posting = $.post(location.href, {
