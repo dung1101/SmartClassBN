@@ -294,7 +294,7 @@ def question_list_option(request, option):
                                        dang__in=dang_cau_hoi)
     for cau_hoi in ds_cau_hoi:
         data.append([cau_hoi.id, cau_hoi.chu_de.ten, cau_hoi.dang, cau_hoi.do_kho,
-                     cau_hoi.giao_vien_tao.ho_ten, str(cau_hoi.thoi_gian_tao)[:-16]])
+                     cau_hoi.giao_vien_tao.ho_ten, str(cau_hoi.thoi_gian_tao + datetime.timedelta(hours=7))[:-16]])
     return JsonResponse({"data": data})
 
 
@@ -311,7 +311,8 @@ def question_list_data(request, id):
         the_loai = '<p id="the_loai_{cau_hoi.id}">{cau_hoi.the_loai}</p>'.format(cau_hoi=cau_hoi)
         do_kho = '<p id="do_kho_{cau_hoi.id}">{cau_hoi.do_kho}</p>'.format(cau_hoi=cau_hoi)
         thoi_gian_tao = '<p id="thoi_gian_tao_{cau_hoi.id}">{thoi_gian_tao}' \
-                        '</p>'.format(cau_hoi=cau_hoi, thoi_gian_tao=str(cau_hoi.thoi_gian_tao)[:-16])
+                        '</p>'.format(cau_hoi=cau_hoi,
+                                      thoi_gian_tao=str(cau_hoi.thoi_gian_tao + datetime.timedelta(hours=7))[:-16])
         nguoi_tao = '<p id="nguoi_tao_{cau_hoi.id}">{cau_hoi.giao_vien_tao.ho_ten}</p>'.format(cau_hoi=cau_hoi)
         data.append([chu_de, the_loai, dang, do_kho, thoi_gian_tao, nguoi_tao])
     return JsonResponse({"data": data})
@@ -320,7 +321,7 @@ def question_list_data(request, id):
 @hp_authenticate
 def question_detail_data(request, id):
     cau_hoi = get_object_or_404(CauHoi, pk=id)
-    thoi_gian_tao = str(cau_hoi.thoi_gian_tao)[:-16]
+    thoi_gian_tao = str(cau_hoi.thoi_gian_tao + datetime.timedelta(hours=7))[:-16]
     if cau_hoi.dang != CauHoi.TN:
         so_diem = "<h5>Điểm số: {} điểm</h5>".format(cau_hoi.so_diem)
         kieu_dap_an = '1'
@@ -796,7 +797,8 @@ def exam_list_data(request, id):
         thoi_gian = '<p id="thoi_gian_{de.id}">{de.thoi_gian}</p>'.format(de=de)
         ky_hoc = '<p id="ky_hoc_{de.id}">{de.ky_hoc}</p>'.format(de=de)
         thoi_gian_tao = '<p id="thoi_gian_tao_{cau_hoi.id}">{thoi_gian_tao}' \
-                        '</p>'.format(cau_hoi=de, thoi_gian_tao=str(de.thoi_gian_tao)[:-16])
+                        '</p>'.format(cau_hoi=de,
+                                      thoi_gian_tao=str(de.thoi_gian_tao + datetime.timedelta(hours=7))[:-16])
         giao_vien_tao = '<p id="giao_vien_tao_{de.id}">{de.giao_vien_tao.ho_ten}</p>'.format(de=de)
         data.append([mon, giao_vien_tao, thoi_gian_tao, thoi_gian, ky_hoc])
     return JsonResponse({"data": data})
