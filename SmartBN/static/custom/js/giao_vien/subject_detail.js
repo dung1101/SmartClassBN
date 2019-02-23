@@ -2,7 +2,7 @@ $(document).ready(function(){
 
     // tạo mới
     $('#create_new_chu_de').click( function(){
-        var ten = $("#new_chu_de textarea[name=ten]").val();
+        var ten = $("#new_chu_de input[name=ten]").val();
 
         if(ten == ""){
             Swal.fire({

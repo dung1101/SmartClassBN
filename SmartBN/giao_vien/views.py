@@ -440,7 +440,9 @@ def exam_create_auto(request):
             ky_hoc = ['Giữa kì II', ]
         else:
             ky_hoc = ['Giữa kì I', 'Cuối kì I', "Giữa kì II", 'Cuối kì II']
-        chi_tiet = ""
+        chi_tiet_tn = ""
+        chi_tiet_dt = ""
+        chi_tiet_tl = ""
         for dang, chi_tiet_chu_de in chi_tiet_so_luong.items():
 
             if dang == "Trắc nhiệm":
@@ -490,32 +492,32 @@ def exam_create_auto(request):
                                                  "messages": 'Không đủ câu hỏi trắc nhiệm khó trong ngân hàng'})
                 so_luong_tn = len(ds_tn)
                 diem = round(cau_truc['r_pt_tn'] / so_luong_tn, 2)
-                chi_tiet += "<b><u>Phần:</u> Trắc nhiệm</b><br>"
+                chi_tiet_tn += "<b><u>Phần:</u> Trắc nhiệm</b><br>"
                 for index, cau_hoi in enumerate(ds_tn):
                     if cau_hoi.co_cau_hoi_nho:
                         ds_cau_hoi_nho = cau_hoi.cau_hoi_nho.all()
 
                         diem_con = round(diem / len(ds_cau_hoi_nho), 2)
-                        chi_tiet += """
+                        chi_tiet_tn += """
                             <b>Câu {index} </b>({diem} điểm)
                             {cau_hoi.noi_dung}
                             <ol type='a'>
                         """.format(cau_hoi=cau_hoi, index=index + 1, diem=diem)
                         for ch in ds_cau_hoi_nho:
-                            chi_tiet += "<li><div>({diem} điểm){}<ol type='A'>".format(ch.noi_dung, diem=diem_con)
+                            chi_tiet_tn += "<li><div>({diem} điểm){}<ol type='A'>".format(ch.noi_dung, diem=diem_con)
                             for k, da in enumerate(ch.dap_an.all()):
                                 if da.dung:
                                     dung = "dap_an_trac_nhiem"
                                 else:
                                     dung = ""
-                                chi_tiet += """
+                                chi_tiet_tn += """
                                 <li class={dung}><div>{da.noi_dung}</div></li>
                                 """.format(da=da, dung=dung)
 
-                            chi_tiet += "</ol></div></li>"
-                        chi_tiet += "</ol>"
+                            chi_tiet_tn += "</ol></div></li>"
+                        chi_tiet_tn += "</ol>"
                     else:
-                        chi_tiet += """
+                        chi_tiet_tn += """
                             <b>Câu {index} </b>({diem} điểm)
                             {cau_hoi.noi_dung}
                             <ol type='A'>
@@ -525,10 +527,10 @@ def exam_create_auto(request):
                                 dung = "dap_an_trac_nhiem"
                             else:
                                 dung = ""
-                            chi_tiet += """
+                            chi_tiet_tn += """
                             <li class={dung}><div>{da.noi_dung}</div></li>
                             """.format(da=da, dung=dung)
-                        chi_tiet += "</ol>"
+                        chi_tiet_tn += "</ol>"
 
             elif dang == "Điền từ":
                 ds_dt = []
@@ -557,18 +559,18 @@ def exam_create_auto(request):
                                              "messages": 'Không đủ câu hỏi điền từ trong ngân hàng'})
                     ds_dt.append(cau_hoi)
 
-                chi_tiet += "<b><u>Phần:</u> Điền từ</u></b><br>"
+                chi_tiet_dt += "<b><u>Phần:</u> Điền từ</u></b><br>"
                 for index, cau_hoi in enumerate(ds_dt):
-                    chi_tiet += """
+                    chi_tiet_dt += """
                         <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
                         {cau_hoi.noi_dung}
                         <ol type="1">
                     """.format(cau_hoi=cau_hoi, index=index + 1)
                     for da in cau_hoi.dap_an.all():
-                        chi_tiet += """
+                        chi_tiet_dt += """
                         <li class="dap_an_dien_tu" >{da.noi_dung}</li>
                         """.format(da=da)
-                    chi_tiet += '</ol>'
+                    chi_tiet_dt += '</ol>'
             else:
                 ds_tl = []
                 for i in range(0, len(chi_tiet_chu_de['Chủ đề'])):
@@ -596,19 +598,19 @@ def exam_create_auto(request):
                                              "messages": 'Không đủ câu hỏi tự luận trong ngân hàng'})
                     ds_tl.append(cau_hoi)
 
-                chi_tiet += "<b><u>Phần:</u> Tự luận</u></b><br>"
+                chi_tiet_tl += "<b><u>Phần:</u> Tự luận</u></b><br>"
                 for index, cau_hoi in enumerate(ds_tl):
                     if cau_hoi.co_cau_hoi_nho:
-                        chi_tiet += """
+                        chi_tiet_tl += """
                                     <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
                                     {cau_hoi.noi_dung}
                                     <ol type='a'>
                                 """.format(cau_hoi=cau_hoi, index=index + 1)
                         for ch in cau_hoi.cau_hoi_nho.all():
-                            chi_tiet += "<li>{}</li>".format(ch.noi_dung)
-                        chi_tiet += "</ol>"
+                            chi_tiet_tl += "<li>{}</li>".format(ch.noi_dung)
+                        chi_tiet_tl += "</ol>"
                     else:
-                        chi_tiet += """
+                        chi_tiet_tl += """
                                     <b>Câu {index} ({cau_hoi.so_diem} điểm)</b>
                                     {cau_hoi.noi_dung}
                                 """.format(cau_hoi=cau_hoi, index=index + 1)
@@ -659,14 +661,18 @@ def exam_create_auto(request):
                 </div>
             </div>
             <div id="3_con" class="exam_body">
-                {chi_tiet}
+                {chi_tiet_tn}
+                {chi_tiet_dt}
+                {chi_tiet_tl}
             </div>
         """.format(user=request.user,
-                   ky_hoc=request.POST['ky_hoc'].lower(),
+                   ky_hoc=request.POST['ky_hoc'][0].lower() + request.POST['ky_hoc'][1:],
                    nam_hoc=request.POST['nam_hoc'],
                    mon=mon,
                    thoi_gian=request.POST['thoi_gian'],
-                   chi_tiet=chi_tiet)
+                   chi_tiet_tn=chi_tiet_tn,
+                   chi_tiet_dt=chi_tiet_dt,
+                   chi_tiet_tl=chi_tiet_tl)
         De.objects.create(mon=mon,
                           thoi_gian=request.POST['thoi_gian'],
                           giao_vien_tao=request.user,

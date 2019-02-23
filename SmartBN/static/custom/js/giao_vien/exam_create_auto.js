@@ -1,7 +1,10 @@
 $(document).ready(function(){
-    $("#ds_chu_de_tn").html(mon[$("#r_gv_mon option:selected").text()]);
-    $("#ds_chu_de_dt").html(mon[$("#r_gv_mon option:selected").text()]);
-    $("#ds_chu_de_tl").html(mon[$("#r_gv_mon option:selected").text()]);
+    setTimeout(function(){
+        $("#ds_chu_de_tn").html(mon[$("#r_gv_mon option:selected").text()]);
+        $("#ds_chu_de_dt").html(mon[$("#r_gv_mon option:selected").text()]);
+        $("#ds_chu_de_tl").html(mon[$("#r_gv_mon option:selected").text()]);
+    }, 1000)
+
 
     // thay đổi môn
     $("#r_gv_mon").change(function(){
